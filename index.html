@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>每日诗词记录 · 主诗 + 复习</title>
+  <title>每日诗词记录 · 主诗 + 随机复习</title>
   <style>
     :root{
       --page:#f6f7fb;
@@ -12,16 +12,18 @@
       --muted:#6b7280;
       --border:#e5e7eb;
 
-      --accent:#2563eb; /* 用于重点句颜色 */
+      --accent:#2563eb; /* 重点句颜色（仅文字色） */
       --danger:#ef4444;
       --good:#10b981;
       --warn:#f59e0b;
+
       --shadow: 0 10px 30px rgba(17,24,39,.08);
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC","Hiragino Sans GB","Microsoft YaHei", Arial;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+        "PingFang SC","Hiragino Sans GB","Microsoft YaHei", Arial;
       background: var(--page);
       color:var(--text);
     }
@@ -37,6 +39,7 @@
     .tab.active{background:#eef2ff;border-color:#c7d2fe}
     .grid{display:grid;grid-template-columns: 1.25fr .75fr;gap:14px;}
     @media (max-width: 980px){ .grid{grid-template-columns:1fr;} }
+
     .card{
       background:var(--card);
       border:1px solid var(--border);
@@ -44,6 +47,7 @@
       padding:14px;
       box-shadow: var(--shadow);
     }
+
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
     .col{display:flex;flex-direction:column;gap:10px;}
     .hr{height:1px;background:var(--border);margin:12px 0;}
@@ -52,6 +56,7 @@
       border:1px solid var(--border);background:#f9fafb;
       padding:6px 10px;border-radius:999px;font-size:12px;color:var(--muted);
     }
+
     .btn{
       background:#f3f4f6;border:1px solid #e5e7eb;color:var(--text);
       padding:10px 12px;border-radius:10px;cursor:pointer;font-size:14px;
@@ -63,20 +68,27 @@
     .btn.danger{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35);}
     .btn.ghost{background:transparent}
     .btn.small{padding:6px 8px;font-size:12px;border-radius:9px}
+
     label{font-size:12px;color:var(--muted);}
     input[type="text"], textarea, select, input[type="date"]{
       background:#fff;color:var(--text);border:1px solid var(--border);
       border-radius:10px;padding:10px 12px;font-size:14px;outline:none;
     }
     textarea{width:100%;min-height:140px;resize:vertical;line-height:1.6}
-    select{min-width:220px}
+    select{min-width:240px}
+
     .meta{color:var(--muted);font-size:13px;line-height:1.6}
-    .notice{color:#92400e;background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.25);padding:10px 12px;border-radius:12px;font-size:13px;line-height:1.6}
+    .notice{
+      color:#92400e;background:rgba(245,158,11,.10);
+      border:1px solid rgba(245,158,11,.25);
+      padding:10px 12px;border-radius:12px;font-size:13px;line-height:1.6
+    }
+
     .titleLine{display:flex;gap:10px;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
     .titleLine h2{font-size:16px;margin:0;font-weight:750}
     .titleLine .sub2{font-size:12px;color:var(--muted)}
 
-    /* ======== Poem card ======== */
+    /* ======== Poem Card ======== */
     .poemCard{
       background:#fff;
       border:1px solid var(--border);
@@ -85,7 +97,7 @@
       margin-top:10px;
     }
     .poemTitle{
-      font-size:20px;          /* 标题变大 */
+      font-size:20px;
       font-weight:850;
       line-height:1.3;
       margin:0;
@@ -96,9 +108,7 @@
       font-size:12px;
       line-height:1.5;
     }
-    .poemLines{
-      margin-top:10px;
-    }
+    .poemLines{ margin-top:10px; }
     .poemLine{
       padding:6px 2px;
       line-height:2.0;
@@ -106,11 +116,11 @@
       letter-spacing:.2px;
       border-radius:10px;
     }
-    /* 重点句：只彩色+加粗，不要底色 */
+    /* 重点句：仅彩色+加粗，无底色 */
     .poemLine.highlight{
       color: var(--accent);
       font-weight: 800;
-      background: transparent; /* 明确无底色 */
+      background: transparent;
     }
     .poemActions{
       margin-top:12px;
@@ -120,7 +130,7 @@
       flex-wrap:wrap;
     }
 
-    /* List cards (history) */
+    /* History */
     details{border:1px solid var(--border);border-radius:14px;background:#fff}
     summary{
       cursor:pointer; padding:12px;
@@ -129,11 +139,17 @@
     }
     summary::-webkit-details-marker{display:none}
     .groupBody{padding:0 12px 12px}
-    .miniRow{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-top:1px solid #f3f4f6}
+    .miniRow{
+      display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
+      padding:10px 0;border-top:1px solid #f3f4f6
+    }
     .miniRow:first-child{border-top:none}
     .miniRow .left{min-width:260px}
     .miniRow .right{display:flex;gap:8px;flex-wrap:wrap}
-    .kbd{border:1px solid var(--border);background:#fff;padding:2px 6px;border-radius:8px;font-size:12px;color:var(--muted)}
+    .kbd{
+      border:1px solid var(--border);background:#fff;padding:2px 6px;border-radius:8px;
+      font-size:12px;color:var(--muted)
+    }
 
     /* Modal */
     .modalMask{
@@ -150,6 +166,7 @@
     }
     .split{display:grid;grid-template-columns: 1fr 1fr;gap:12px;}
     @media (max-width: 980px){ .split{grid-template-columns:1fr;} }
+
     .linePicker{
       border:1px solid var(--border);
       border-radius:14px;
@@ -220,7 +237,7 @@
               <input type="date" id="fDate" />
             </div>
             <div style="flex:1">
-              <label>题目（可选）</label>
+              <label>题目（必填，用于全库查重）</label>
               <input type="text" id="fTitle" placeholder="如：静夜思" />
             </div>
           </div>
@@ -241,7 +258,7 @@
               <input type="checkbox" id="fSetAsMain" />
               <label for="fSetAsMain" style="margin:0;cursor:pointer">设为当日主诗</label>
             </div>
-            <div class="meta">每个日期只能有 1 条主诗，后设定会覆盖旧主诗。</div>
+            <div class="meta">主诗可指向历史记录（不必是当天新记录）。</div>
           </div>
 
           <div>
@@ -278,14 +295,16 @@
 
       <div class="hr"></div>
       <div class="footNote">
-        说明：只记录诗词（整首 + 若干重点句）。换设备请用“备份”导出/导入。
+        说明：只记录诗词（整首 + 若干重点句）。全库按“题目”去重；若重复可选择编辑旧记录或直接设为当日主诗。
       </div>
     </div>
   </div>
 
 <script>
-/** Storage */
-const LS_KEY = "poem_journal_v2";
+/** =========================
+ *  Storage & schema
+ * ========================= */
+const LS_KEY = "poem_journal_v2"; // 当前版本 key（会自动从 v1 迁移）
 
 function nowTs(){ return Date.now(); }
 function pad2(n){ return String(n).padStart(2,"0"); }
@@ -314,38 +333,33 @@ function escapeHtml(s){
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
 }
+function normTitle(t){
+  return String(t || "").trim().replace(/\s+/g, " ");
+}
 
-function loadDB(){
-  try{
-    const raw = localStorage.getItem(LS_KEY);
-    if(!raw) return { version:3, records:[], ui:{} };
-    const db = JSON.parse(raw);
-    if(!db || !Array.isArray(db.records)) return { version:3, records:[], ui:{} };
-    db.ui = db.ui || {};
-    db.ui.selectedRecordByDate = db.ui.selectedRecordByDate || {};
-    db.ui.mainByDate = db.ui.mainByDate || {};
-    return migrateDB(db);
-  }catch(e){
-    return { version:3, records:[], ui:{} };
-  }
-}
-function saveDB(db){
-  localStorage.setItem(LS_KEY, JSON.stringify(db));
-}
 function migrateDB(db){
+  db.version = db.version || 3;
   db.ui = db.ui || {};
+  db.ui.activeTab = db.ui.activeTab || "today";
+  db.ui.selectedDate = db.ui.selectedDate || yesterdayKey();
   db.ui.selectedRecordByDate = db.ui.selectedRecordByDate || {};
   db.ui.mainByDate = db.ui.mainByDate || {};
-  if(!db.ui.selectedDate) db.ui.selectedDate = yesterdayKey();
-
-  // review random selection persistence
-  if(!db.ui.reviewRandomId) db.ui.reviewRandomId = null;
+  db.ui.historyQuery = db.ui.historyQuery || "";
+  db.ui.reviewRandomId = db.ui.reviewRandomId || null;
 
   let changed = false;
+
   for(const r of db.records){
+    if(!r.id){ r.id = uuid(); changed = true; }
+    r.createdDate = r.createdDate || dateKey();
+    r.createdAt = r.createdAt || nowTs();
+    r.updatedAt = r.updatedAt || r.createdAt;
+
+    // poem lines
     r.poemLines = safeLines(r.poemLines || []);
     if(r.poemLines.length === 0){ r.poemLines = [""]; changed = true; }
 
+    // highlight indices (兼容旧字段 highlightIndex)
     if(!Array.isArray(r.highlightIndices)){
       if(Number.isInteger(r.highlightIndex)) r.highlightIndices = [r.highlightIndex];
       else r.highlightIndices = [0];
@@ -357,21 +371,54 @@ function migrateDB(db){
     )).map(x => Math.max(0, Math.min(maxIdx, x))).sort((a,b)=>a-b);
     if(r.highlightIndices.length === 0){ r.highlightIndices = [0]; changed = true; }
 
-    if(!r.id){ r.id = uuid(); changed = true; }
-    if(!r.createdDate){ r.createdDate = dateKey(); changed = true; }
-    if(!r.createdAt){ r.createdAt = nowTs(); changed = true; }
-    if(!r.updatedAt){ r.updatedAt = r.createdAt; changed = true; }
+    // review fields
     if(r.lastReviewedAt === undefined){ r.lastReviewedAt = null; changed = true; }
     if(r.reviewCount === undefined){ r.reviewCount = 0; changed = true; }
     if(r.nextDueAt === undefined){ r.nextDueAt = null; changed = true; }
+
+    // normalize title storage (不强制改变原值，只在保存时强制)
   }
-  if(changed) saveDB(db);
+
+  if(changed) localStorage.setItem(LS_KEY, JSON.stringify(db));
   return db;
+}
+
+function loadDB(){
+  // Prefer v2
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){
+      const db = JSON.parse(raw);
+      if(db && Array.isArray(db.records)) return migrateDB(db);
+    }
+  }catch(e){}
+
+  // Fallback migrate from v1 if exists
+  try{
+    const raw1 = localStorage.getItem("poem_journal_v1");
+    if(raw1){
+      const old = JSON.parse(raw1);
+      if(old && Array.isArray(old.records)){
+        const db = { version:3, records: old.records, ui: old.ui || {} };
+        const migrated = migrateDB(db);
+        localStorage.setItem(LS_KEY, JSON.stringify(migrated));
+        return migrated;
+      }
+    }
+  }catch(e){}
+
+  return migrateDB({ version:3, records:[], ui:{} });
+}
+
+function saveDB(db){
+  localStorage.setItem(LS_KEY, JSON.stringify(db));
 }
 
 let db = loadDB();
 
-/** Review scheduling (still used to compute due pool; UI now shows only one random) */
+/** =========================
+ *  Review scheduling
+ * ========================= */
 const REVIEW_INTERVAL_DAYS = [1,3,7,14,30,60,120];
 function nextDueFrom(count, fromTs){
   const idx = Math.max(0, Math.min(REVIEW_INTERVAL_DAYS.length-1, count-1));
@@ -405,7 +452,9 @@ function markAgain(recId){
   render();
 }
 
-/** Helpers */
+/** =========================
+ *  Helpers
+ * ========================= */
 function recTitle(rec){
   const t = rec.title?.trim();
   const a = rec.author?.trim();
@@ -439,25 +488,35 @@ function groupByDate(records){
   return { keys, map };
 }
 function getRecordsByDate(d){
-  return db.records.filter(r => r.createdDate === d).sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
-}
-function getMainRecordForDate(d){
-  const recs = getRecordsByDate(d);
-  if(recs.length === 0) return { recs, active: null };
-
-  const mainId = db.ui.mainByDate?.[d] || null;
-  const main = mainId ? recs.find(r => r.id === mainId) : null;
-
-  const selectedId = db.ui.selectedRecordByDate?.[d] || null;
-  const selected = selectedId ? recs.find(r => r.id === selectedId) : null;
-
-  const active = main || selected || recs[0];
-  return { recs, active };
+  return db.records
+    .filter(r => r.createdDate === d)
+    .sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
 }
 function setMainForDate(d, recId){
   db.ui.mainByDate = db.ui.mainByDate || {};
   db.ui.mainByDate[d] = recId;
   saveDB(db);
+}
+function getMainRecordForDate(d){
+  const recs = getRecordsByDate(d);
+
+  const mainId = db.ui.mainByDate?.[d] || null;
+  const main = mainId ? db.records.find(r => r.id === mainId) : null; // 允许主诗来自历史
+
+  const selectedId = db.ui.selectedRecordByDate?.[d] || null;
+  const selected = selectedId ? db.records.find(r => r.id === selectedId) : null;
+
+  // 优先：已选择 > 主诗 > 当天最新
+  const active = selected || main || recs[0] || null;
+
+  // 下拉可选项：主诗（若存在） + 当天记录
+  const options = [];
+  const seen = new Set();
+  if(main){ options.push(main); seen.add(main.id); }
+  for(const r of recs){
+    if(!seen.has(r.id)){ options.push(r); seen.add(r.id); }
+  }
+  return { recs, main, active, options };
 }
 function chooseRandom(arr, excludeId=null){
   if(!arr || arr.length === 0) return null;
@@ -467,7 +526,9 @@ function chooseRandom(arr, excludeId=null){
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-/** UI tabs */
+/** =========================
+ *  UI: Tabs
+ * ========================= */
 const left = document.getElementById("leftCard");
 const right = document.getElementById("rightCard");
 
@@ -488,7 +549,9 @@ function setActiveTab(){
   if(activeTab==="backup") tabBackup.classList.add("active");
 }
 
-/** Modal add/edit */
+/** =========================
+ *  Modal: Add/Edit
+ * ========================= */
 const modalMask = document.getElementById("modalMask");
 const btnAddTop = document.getElementById("btnAddTop");
 const btnCloseModal = document.getElementById("btnCloseModal");
@@ -517,6 +580,7 @@ let selectedHighlights = new Set();
 btnAddTop.onclick = () => openAddModal();
 btnCloseModal.onclick = () => closeModal();
 modalMask.addEventListener("click", (e) => { if(e.target === modalMask) closeModal(); });
+
 fPoem.addEventListener("input", () => renderLinePicker());
 btnClearSel.onclick = () => { selectedHighlights = new Set(); renderLinePicker(); };
 btnSelectAll.onclick = () => {
@@ -529,6 +593,7 @@ function openAddModal(){
   modalMode = "add";
   editingId = null;
   editingOriginalDate = null;
+
   modalTitle.textContent = "记录诗词";
   btnDeleteInModal.style.display = "none";
 
@@ -539,8 +604,8 @@ function openAddModal(){
   fPoem.value = "";
   fNote.value = "";
   fSetAsMain.checked = true;
-  selectedHighlights = new Set([0]);
 
+  selectedHighlights = new Set([0]);
   renderLinePicker();
   modalMask.style.display = "flex";
 }
@@ -551,6 +616,7 @@ function openEditModal(recId){
   modalMode = "edit";
   editingId = recId;
   editingOriginalDate = rec.createdDate || null;
+
   modalTitle.textContent = "编辑记录";
   btnDeleteInModal.style.display = "inline-block";
 
@@ -606,8 +672,19 @@ function renderLinePicker(){
 
 btnSave.onclick = () => {
   const d = fDate.value || dateKey();
+
+  // 题目必填（用于全库去重）
+  const titleNow = normTitle(fTitle.value);
+  if(!titleNow){
+    alert("请填写题目（用于全库查重，避免重复记录）。");
+    return;
+  }
+
   const poemLines = safeLines(fPoem.value.split("\n"));
-  if(poemLines.length === 0){ alert("请先输入诗词正文（至少一行）。"); return; }
+  if(poemLines.length === 0){
+    alert("请先输入诗词正文（至少一行）。");
+    return;
+  }
 
   const maxIdx = poemLines.length - 1;
   const highlightIndices = Array.from(selectedHighlights)
@@ -615,19 +692,56 @@ btnSave.onclick = () => {
     .filter(i => Number.isFinite(i))
     .map(i => Math.max(0, Math.min(maxIdx, i)))
     .sort((a,b)=>a-b);
-  if(highlightIndices.length === 0){ alert("请至少选择 1 行作为重点句。"); return; }
+
+  if(highlightIndices.length === 0){
+    alert("请至少选择 1 行作为重点句。");
+    return;
+  }
 
   const payload = {
     createdDate: d,
-    title: fTitle.value.trim() || null,
-    author: fAuthor.value.trim() || null,
-    dynasty: fDynasty.value.trim() || null,
+    title: titleNow, // 强制使用归一化标题
+    author: String(fAuthor.value || "").trim() || null,
+    dynasty: String(fDynasty.value || "").trim() || null,
     poemLines,
     highlightIndices,
-    note: fNote.value.trim() || null,
+    note: String(fNote.value || "").trim() || null,
   };
 
   if(modalMode === "add"){
+    // ===== 全库按题目去重（不允许新增重复） =====
+    const dup = db.records.find(r => normTitle(r.title) === titleNow);
+    if(dup){
+      const goEdit = confirm(
+        `检测到历史中已存在同题目记录：《${titleNow}》\n` +
+        `原记录日期：${dup.createdDate || "未知"}\n\n` +
+        `点击“确定”：去编辑那条旧记录（不会新增）。\n` +
+        `点击“取消”：继续下一步。`
+      );
+      if(goEdit){
+        closeModal();
+        openEditModal(dup.id);
+        return;
+      }
+
+      const setMain = confirm(
+        `是否将“已有的《${titleNow}》”设为 ${d} 的主诗？\n` +
+        `（不新增记录，只设置主诗指向）\n\n` +
+        `点击“确定”：设为主诗\n` +
+        `点击“取消”：返回继续修改（不保存）`
+      );
+      if(setMain){
+        setMainForDate(d, dup.id);
+        db.ui.selectedDate = d;
+        db.ui.selectedRecordByDate[d] = dup.id; // 让主界面直接显示这首
+        saveDB(db);
+        closeModal();
+        render();
+      }
+      return;
+    }
+    // ===== 去重结束 =====
+
     const rec = {
       id: uuid(),
       ...payload,
@@ -638,33 +752,66 @@ btnSave.onclick = () => {
       nextDueAt: null
     };
     db.records.unshift(rec);
-    if(fSetAsMain.checked) setMainForDate(d, rec.id);
+
+    if(fSetAsMain.checked){
+      setMainForDate(d, rec.id);
+    }
+
+    db.ui.selectedDate = d;
+    db.ui.selectedRecordByDate[d] = rec.id;
+
     saveDB(db);
-  }else if(modalMode === "edit" && editingId){
+    closeModal();
+    render();
+    return;
+  }
+
+  // Edit mode
+  if(modalMode === "edit" && editingId){
     const rec = db.records.find(r => r.id === editingId);
     if(!rec) return;
 
+    // 编辑时也防止把题目改成别人已有的题目
+    const conflict = db.records.find(r => r.id !== rec.id && normTitle(r.title) === titleNow);
+    if(conflict){
+      const goEdit = confirm(
+        `题目《${titleNow}》已存在另一条记录（日期：${conflict.createdDate || "未知"}）。\n\n` +
+        `点击“确定”：去编辑那条已有记录。\n` +
+        `点击“取消”：返回继续修改（不保存）。`
+      );
+      if(goEdit){
+        closeModal();
+        openEditModal(conflict.id);
+      }
+      return;
+    }
+
     const oldDate = editingOriginalDate || rec.createdDate;
+
     Object.assign(rec, payload);
     rec.updatedAt = nowTs();
 
+    // 若记录从 oldDate 改到新日期，且曾是 oldDate 主诗，则清除 oldDate 主诗
     if(oldDate && oldDate !== d && db.ui.mainByDate && db.ui.mainByDate[oldDate] === rec.id){
       delete db.ui.mainByDate[oldDate];
     }
 
+    // 设置/取消当前日期主诗
     if(fSetAsMain.checked){
       setMainForDate(d, rec.id);
     }else{
       if(db.ui.mainByDate && db.ui.mainByDate[d] === rec.id){
         delete db.ui.mainByDate[d];
       }
-      saveDB(db);
     }
-    saveDB(db);
-  }
 
-  closeModal();
-  render();
+    db.ui.selectedDate = d;
+    db.ui.selectedRecordByDate[d] = rec.id;
+
+    saveDB(db);
+    closeModal();
+    render();
+  }
 };
 
 btnDeleteInModal.onclick = () => {
@@ -676,23 +823,23 @@ btnDeleteInModal.onclick = () => {
   if(rec && db.ui.mainByDate && db.ui.mainByDate[rec.createdDate] === rec.id){
     delete db.ui.mainByDate[rec.createdDate];
   }
-  db.records = db.records.filter(r => r.id !== editingId);
-
-  // If random review points to deleted record, clear it
   if(db.ui.reviewRandomId === editingId) db.ui.reviewRandomId = null;
 
+  db.records = db.records.filter(r => r.id !== editingId);
   saveDB(db);
   closeModal();
   render();
 };
 
-/** Rendering blocks */
+/** =========================
+ *  Rendering blocks
+ * ========================= */
 function renderPoemCard(rec, actionsHtml){
   const lines = safeLines(rec.poemLines);
   const set = new Set(rec.highlightIndices || []);
   const title = recTitle(rec);
   const meta = [
-    rec.createdDate ? `记录：${rec.createdDate}` : null,
+    rec.createdDate ? `记录日期：${rec.createdDate}` : null,
     `上次复习：${rec.lastReviewedAt ? daysAgo(rec.lastReviewedAt) : "未复习过"}`,
     `复习次数：${rec.reviewCount || 0}`
   ].filter(Boolean).join(" · ");
@@ -712,19 +859,21 @@ function renderPoemCard(rec, actionsHtml){
   `;
 }
 
-/** Today view */
+/** =========================
+ *  Today view
+ * ========================= */
 function renderToday(){
   db.ui.selectedDate = db.ui.selectedDate || yesterdayKey();
   const selectedDate = db.ui.selectedDate;
 
-  const { recs, active } = getMainRecordForDate(selectedDate);
+  const { recs, main, active, options } = getMainRecordForDate(selectedDate);
 
-  // Review pool: due first, else all
+  // 复习池：优先到期，否则全库
   const now = nowTs();
   const duePool = db.records.filter(r => isDue(r, now));
   const pool = duePool.length ? duePool : db.records.slice();
 
-  // pick or validate current random
+  // 维护当前随机复习记录（如果不存在/不在池里，则重抽）
   let reviewRec = null;
   if(pool.length){
     const currentId = db.ui.reviewRandomId;
@@ -739,10 +888,11 @@ function renderToday(){
     saveDB(db);
   }
 
+  // Left: 主诗/当日显示
   left.innerHTML = `
     <div class="titleLine">
       <h2>当日主诗</h2>
-      <div class="sub2">选日期查看；若设置了主诗会优先显示</div>
+      <div class="sub2">选日期查看；主诗可指向历史记录</div>
     </div>
 
     <div class="hr"></div>
@@ -752,17 +902,17 @@ function renderToday(){
         <label>日期：</label>
         <input type="date" id="mainDate" value="${escapeHtml(selectedDate)}" />
       </div>
-      <div class="pill">该日共 ${recs.length} 条</div>
+      <div class="pill">该日新记录：${recs.length} 条</div>
     </div>
 
-    ${recs.length === 0 ? `
+    ${(!active) ? `
       <div class="notice" style="margin-top:10px">
-        该日期没有记录。点击右上角 <span class="kbd">+ 记录诗词</span> 新增，并选择“设为当日主诗”。
+        该日期没有可显示的诗（既没有新记录，也未设置主诗）。你可以新增一条，或把历史诗设为该日主诗。
       </div>
     ` : `
-      ${recs.length > 1 ? `
+      ${(options.length > 1) ? `
         <div class="row" style="justify-content:flex-end;margin-top:10px">
-          <label>切换：</label>
+          <label>查看：</label>
           <select id="selRecord"></select>
         </div>
       ` : ``}
@@ -775,6 +925,7 @@ function renderToday(){
     `}
   `;
 
+  // Right: 随机复习
   right.innerHTML = `
     <div class="titleLine">
       <h2>随机复习</h2>
@@ -787,7 +938,7 @@ function renderToday(){
       <button class="btn small primary" id="btnReroll">随机换一首</button>
     </div>
 
-    ${!reviewRec ? `
+    ${(!reviewRec) ? `
       <div class="meta" style="margin-top:10px">还没有可复习的诗。先新增几条记录。</div>
     ` : `
       ${renderPoemCard(reviewRec, `
@@ -804,37 +955,39 @@ function renderToday(){
     </div>
   `;
 
-  // Bind date selector
+  // Bind: date selector
   document.getElementById("mainDate").onchange = (e) => {
     db.ui.selectedDate = e.target.value || db.ui.selectedDate;
     saveDB(db);
     render();
   };
 
-  // Bind record selector if needed
-  if(recs.length > 1){
+  // Bind: record selector (options)
+  if(active && options.length > 1){
     const sel = document.getElementById("selRecord");
-    sel.innerHTML = recs.map((r, i) => {
-      const isMain = (db.ui.mainByDate && db.ui.mainByDate[selectedDate] === r.id);
-      const mainMark = isMain ? "（主诗）" : "";
-      return `<option value="${r.id}" ${r.id===active.id?"selected":""}>${i+1}. ${escapeHtml(recTitle(r))} ${mainMark}</option>`;
+    const mainId = db.ui.mainByDate?.[selectedDate] || null;
+
+    sel.innerHTML = options.map((r, i) => {
+      const isMain = (mainId && r.id === mainId);
+      const tag = isMain ? "（主诗）" : (r.createdDate === selectedDate ? "（当天）" : "（历史）");
+      return `<option value="${r.id}" ${r.id===active.id?"selected":""}>${i+1}. ${escapeHtml(recTitle(r))} ${tag}</option>`;
     }).join("");
+
     sel.onchange = () => {
-      db.ui.selectedRecordByDate = db.ui.selectedRecordByDate || {};
       db.ui.selectedRecordByDate[selectedDate] = sel.value;
       saveDB(db);
       render();
     };
   }
 
-  // Bind main actions
+  // Bind: main actions
   if(active){
     document.getElementById("btnMainKnow").onclick = () => markKnow(active.id);
     document.getElementById("btnMainAgain").onclick = () => markAgain(active.id);
     document.getElementById("btnMainEdit").onclick = () => openEditModal(active.id);
   }
 
-  // Bind random button
+  // Bind: reroll
   document.getElementById("btnReroll").onclick = () => {
     const now = nowTs();
     const duePool = db.records.filter(r => isDue(r, now));
@@ -845,7 +998,7 @@ function renderToday(){
     render();
   };
 
-  // Bind review actions
+  // Bind: review actions
   right.querySelectorAll("button[data-ract]").forEach(btn => {
     btn.onclick = () => {
       const act = btn.getAttribute("data-ract");
@@ -857,7 +1010,9 @@ function renderToday(){
   });
 }
 
-/** History view */
+/** =========================
+ *  History view
+ * ========================= */
 let historyQuery = db.ui.historyQuery || "";
 
 function renderMiniRow(rec){
@@ -866,7 +1021,7 @@ function renderMiniRow(rec){
     <div class="miniRow">
       <div class="left">
         <div style="font-weight:750">${escapeHtml(recTitle(rec))}</div>
-        <div class="meta">日期：${escapeHtml(rec.createdDate || "")}</div>
+        <div class="meta">记录日期：${escapeHtml(rec.createdDate || "")}</div>
         <div class="meta">上次复习：${escapeHtml(reviewed)} · 复习次数：${rec.reviewCount||0}</div>
         <div id="full_${rec.id}" style="display:none;margin-top:8px">
           ${renderPoemCard(rec, `
@@ -908,7 +1063,7 @@ function renderDateGroup(dateStr, recs){
 
 function renderHistory(){
   const total = db.records.length;
-  const q = historyQuery.trim();
+  const q = String(historyQuery || "").trim();
 
   const filtered = q ? db.records.filter(r => {
     const hay = [
@@ -931,228 +1086,14 @@ function renderHistory(){
     <div class="hr"></div>
 
     <div class="row">
-      <input type="text" id="historySearch" placeholder="搜索：题目 / 作者 / 正文关键词 / 备注" value="${escapeHtml(q)}" style="flex:1;min-width:260px" />
+      <input type="text" id="historySearch" placeholder="搜索：题目 / 作者 / 正文关键词 / 备注"
+        value="${escapeHtml(q)}" style="flex:1;min-width:260px" />
       <button class="btn ghost" id="btnClearSearch">清空</button>
     </div>
 
     <div class="hr"></div>
 
-    ${keys.length===0 ? `<div class="meta">没有记录。点击右上角 <span class="kbd">+ 记录诗词</span> 添加第一条。</div>` : `
-      <div class="col" style="gap:10px">
-        ${keys.map(k => renderDateGroup(k, map.get(k))).join("")}
-      </div>
-    `}
-  `;
-
-  right.innerHTML = `
-    <div class="titleLine">
-      <h2>提示</h2>
-      <div class="sub2">主诗与随机复习</div>
-    </div>
-    <div class="hr"></div>
-    <div class="meta">
-      - 新增/编辑时勾选“设为当日主诗”，该记录会成为该日期主诗。<br/>
-      - 今日页左侧选日期查看；右侧每次只随机显示一首复习诗，可随时换。<br/>
-      - 重点句仅“彩色 + 加粗”，不加底色、不加行号标签。
-    </div>
-  `;
-
-  document.getElementById("historySearch").oninput = (e) => {
-    historyQuery = e.target.value;
-    db.ui.historyQuery = historyQuery;
-    saveDB(db);
-    renderHistory();
-  };
-  document.getElementById("btnClearSearch").onclick = () => {
-    historyQuery = "";
-    db.ui.historyQuery = "";
-    saveDB(db);
-    render();
-  };
-
-  left.querySelectorAll("button[data-hact]").forEach(btn => {
-    btn.onclick = () => {
-      const act = btn.getAttribute("data-hact");
-      const id = btn.getAttribute("data-id");
-
-      if(act==="toggle"){
-        const el = document.getElementById(`full_${id}`);
-        const show = el.style.display !== "none";
-        el.style.display = show ? "none" : "block";
-        return;
-      }
-      if(act==="edit") return openEditModal(id);
-      if(act==="know") return markKnow(id);
-      if(act==="again") return markAgain(id);
-
-      if(act==="del"){
-        const ok = confirm("确定删除这条记录？删除后无法恢复（除非你有备份）。");
-        if(!ok) return;
-
-        const rec = db.records.find(r => r.id === id);
-        if(rec && db.ui.mainByDate && db.ui.mainByDate[rec.createdDate] === rec.id){
-          delete db.ui.mainByDate[rec.createdDate];
-        }
-        if(db.ui.reviewRandomId === id) db.ui.reviewRandomId = null;
-
-        db.records = db.records.filter(r => r.id !== id);
-        saveDB(db);
-        render();
-      }
-    };
-  });
-}
-
-/** Backup view */
-function downloadText(filename, text, mime="application/json;charset=utf-8"){
-  const blob = new Blob([text], {type:mime});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-function exportJSON(){
-  const payload = { exportedAt: nowTs(), version: db.version || 3, records: db.records, ui: db.ui };
-  const name = `poem-journal-backup_${dateKey()}.json`;
-  downloadText(name, JSON.stringify(payload, null, 2));
-}
-function exportCSV(){
-  const header = ["createdDate","title","author","dynasty","highlightLines","poemText","note","reviewCount","lastReviewedAt","nextDueAt"];
-  const rows = [header.join(",")];
-  for(const r of db.records){
-    const lines = safeLines(r.poemLines);
-    const idxs = Array.isArray(r.highlightIndices) ? r.highlightIndices : [0];
-    const uniq = Array.from(new Set(idxs)).filter(i => i>=0 && i<lines.length).sort((a,b)=>a-b);
-    const highlightLines = uniq.map(i => lines[i]).join(" / ");
-    const poemText = lines.join(" / ");
-    const row = [
-      r.createdDate || "",
-      r.title || "",
-      r.author || "",
-      r.dynasty || "",
-      highlightLines,
-      poemText,
-      r.note || "",
-      String(r.reviewCount||0),
-      r.lastReviewedAt ? new Date(r.lastReviewedAt).toISOString() : "",
-      r.nextDueAt ? new Date(r.nextDueAt).toISOString() : ""
-    ].map(v => `"${String(v).replaceAll('"','""')}"`);
-    rows.push(row.join(","));
-  }
-  downloadText(`poem-journal_${dateKey()}.csv`, rows.join("\n"), "text/csv;charset=utf-8");
-}
-async function importJSONReplace(){
-  const input = document.getElementById("fileImport");
-  const file = input.files && input.files[0];
-  if(!file){ alert("请先选择要导入的 JSON 文件。"); return; }
-  const ok = confirm("这将用导入内容覆盖当前所有记录。确定继续？");
-  if(!ok) return;
-
-  try{
-    const text = await file.text();
-    const parsed = JSON.parse(text);
-
-    let records = null;
-    if(Array.isArray(parsed)) records = parsed;
-    else if(parsed && Array.isArray(parsed.records)) records = parsed.records;
-    if(!records) throw new Error("文件格式不正确：未找到 records 数组。");
-
-    const cleaned = records.map(r => {
-      const poemLines = safeLines(r.poemLines || (typeof r.poemText==="string" ? r.poemText.split("\n") : []));
-      const maxIdx = Math.max(0, poemLines.length-1);
-
-      let idxs = r.highlightIndices;
-      if(!Array.isArray(idxs)){
-        if(Number.isInteger(r.highlightIndex)) idxs = [r.highlightIndex];
-        else idxs = [0];
-      }
-      idxs = Array.from(new Set(idxs.map(x=>parseInt(x,10)).filter(x=>Number.isFinite(x))))
-        .map(x => Math.max(0, Math.min(maxIdx, x))).sort((a,b)=>a-b);
-      if(idxs.length===0) idxs = [0];
-
-      return {
-        id: r.id || uuid(),
-        createdDate: r.createdDate || dateKey(),
-        title: r.title || null,
-        author: r.author || null,
-        dynasty: r.dynasty || null,
-        poemLines,
-        highlightIndices: idxs,
-        note: r.note || null,
-        createdAt: r.createdAt || nowTs(),
-        updatedAt: r.updatedAt || nowTs(),
-        lastReviewedAt: r.lastReviewedAt || null,
-        reviewCount: r.reviewCount || 0,
-        nextDueAt: r.nextDueAt ?? null
-      };
-    });
-
-    db.records = cleaned.sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
-    if(parsed && parsed.ui) db.ui = parsed.ui;
-    db = migrateDB(db);
-    saveDB(db);
-    alert("导入成功。");
-    render();
-  }catch(e){
-    alert("导入失败：" + (e && e.message ? e.message : String(e)));
-  }
-}
-function renderBackup(){
-  const total = db.records.length;
-  const lastUpdated = total ? new Date(Math.max(...db.records.map(r => r.updatedAt||0))).toLocaleString() : "无";
-
-  left.innerHTML = `
-    <div class="titleLine">
-      <h2>备份与迁移</h2>
-      <div class="sub2">强烈建议定期导出</div>
-    </div>
-    <div class="hr"></div>
-    <div class="meta">当前共有 <b>${total}</b> 条记录。最近更新：<b>${escapeHtml(lastUpdated)}</b>。</div>
-    <div class="hr"></div>
-    <div class="row">
-      <button class="btn primary" id="btnExport">导出 JSON 备份</button>
-      <button class="btn ghost" id="btnExportCsv">导出 CSV（可选）</button>
-    </div>
-    <div class="hr"></div>
-    <div class="row">
-      <label class="pill">导入 JSON</label>
-      <input type="file" id="fileImport" accept="application/json" />
-      <button class="btn danger" id="btnImportReplace">导入并覆盖（危险）</button>
-    </div>
-    <div class="notice" style="margin-top:10px">
-      注意：GitHub Pages 只是托管网页文件；你的记录仍保存在浏览器本地。换设备/换浏览器后需要导入备份才能恢复。
-    </div>
-  `;
-
-  right.innerHTML = `
-    <div class="titleLine">
-      <h2>部署要点</h2>
-      <div class="sub2">静态站点</div>
-    </div>
-    <div class="hr"></div>
-    <div class="meta">
-      1) 仓库根目录放 <span class="kbd">index.html</span>。<br/>
-      2) Settings → Pages：Deploy from a branch → main / root。<br/>
-      3) 修改后 commit，Pages 自动更新。<br/>
-    </div>
-  `;
-
-  document.getElementById("btnExport").onclick = () => exportJSON();
-  document.getElementById("btnExportCsv").onclick = () => exportCSV();
-  document.getElementById("btnImportReplace").onclick = () => importJSONReplace();
-}
-
-/** Main render */
-function render(){
-  setActiveTab();
-  if(activeTab==="today") return renderToday();
-  if(activeTab==="history") return renderHistory();
-  if(activeTab==="backup") return renderBackup();
-}
-
-/** Init */
-render();
-</script>
-</body>
-</html>
+    ${keys.length===0 ? `
+      <div class="meta">没有记录。点击右上角 <span class="kbd">+ 记录诗词</span> 添加第一条。</div>
+    ` : `
+      <div c
