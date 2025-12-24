@@ -184,6 +184,7 @@
       background: rgba(229,231,235,.9);
       margin:12px 0;
     }
+    .row suggesting{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
     .col{display:flex;flex-direction:column;gap:10px;}
     .pill{
@@ -240,6 +241,7 @@
       font-weight:900;
       letter-spacing:.3px;
       line-height:1.25;
+      text-align:center; /* 标题居中 */
     }
     .poemMeta{
       margin-top:6px;
@@ -247,15 +249,21 @@
       font-size:12px;
       line-height:1.6;
     }
+    .poemMetaBottom{
+      margin-top:10px;
+      text-align:center; /* 记录日期在底部并居中 */
+    }
     .poemLines{
       margin-top:12px;
       padding:6px 4px 2px;
+      text-align:center; /* 诗句整体居中 */
     }
     .poemLine{
       padding:6px 0;
       line-height:2.0;
       font-size:16px;
       letter-spacing:.2px;
+      text-align:center; /* 每行诗句居中 */
     }
     .poemLine.highlight{
       color:var(--accent);
@@ -265,7 +273,7 @@
     .poemActions{
       margin-top:12px;
       display:flex;
-      justify-content:flex-end;
+      justify-content:flex-end; /* 按钮保持右下角 */
       gap:8px;
       flex-wrap:wrap;
     }
@@ -982,7 +990,7 @@
     }
     linePicker.innerHTML = html;
 
-    var els = linePicker.querySelectorAll(".pickLine");
+    varels = linePicker.querySelectorAll(".pickLine");
     for(var j=0;j<els.length;j++){
       els[j].onclick = function(){
         var idx2 = parseInt(this.getAttribute("data-idx"),10);
@@ -1178,29 +1186,42 @@
     return m;
   }
 
+  // ✅ 这里已改：记录日期移到底部
   function renderPoemCard(rec, actionsHtml){
     var lines = safeLines(rec.poemLines);
     var hi = buildHighlightMap(rec.highlightIndices || []);
     var title = recTitle(rec);
-    var meta = [];
-    if(rec.createdDate) meta.push("记录日期：" + rec.createdDate);
-    meta.push("上次复习：" + (rec.lastReviewedAt ? daysAgo(rec.lastReviewedAt) : "未复习过"));
-    meta.push("复习次数：" + (rec.reviewCount || 0));
+
+    // 顶部 meta：不放记录日期
+    var metaTop = [];
+    metaTop.push("上次复习：" + (rec.lastReviewedAt ? daysAgo(rec.lastReviewedAt) : "未复习过"));
+    metaTop.push("复习次数：" + (rec.reviewCount || 0));
+
+    // 底部日期
+    var dateLine = rec.createdDate ? ("记录日期：" + rec.createdDate) : "";
 
     var html = '';
     html += '<div class="poemCard">';
     html +=   '<div class="poemTitle">' + escapeHtml(title) + '</div>';
-    html +=   '<div class="poemMeta">' + escapeHtml(meta.join(" · ")) + '</div>';
+    html +=   '<div class="poemMeta">' + escapeHtml(metaTop.join(" · ")) + '</div>';
+
     html +=   '<div class="poemLines">';
     for(var i=0;i<lines.length;i++){
       var cls = hi[String(i)] ? "poemLine highlight" : "poemLine";
       html += '<div class="' + cls + '">' + escapeHtml(lines[i]) + '</div>';
     }
     html +=   '</div>';
+
     if(rec.note){
       html += '<div class="poemMeta" style="margin-top:8px">备注：' + escapeHtml(rec.note) + '</div>';
     }
+
     html +=   '<div class="poemActions">' + (actionsHtml || "") + '</div>';
+
+    if(dateLine){
+      html += '<div class="poemMeta poemMetaBottom">' + escapeHtml(dateLine) + '</div>';
+    }
+
     html += '</div>';
     return html;
   }
