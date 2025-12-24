@@ -21,7 +21,6 @@
 
       --radius-lg:18px;
       --radius-md:14px;
-      --radius-sm:12px;
 
       --shadow-sm: 0 6px 18px rgba(17,24,39,.06);
       --shadow-md: 0 14px 36px rgba(17,24,39,.10);
@@ -125,10 +124,7 @@
       background: linear-gradient(180deg, rgba(37,99,235,.95), rgba(37,99,235,.85));
       color:#fff;
     }
-    .btn.ghost{
-      background:transparent;
-      box-shadow:none;
-    }
+    .btn.ghost{ background:transparent; box-shadow:none; }
     .btn.small{
       padding:7px 10px;
       font-size:12px;
@@ -184,7 +180,6 @@
       background: rgba(229,231,235,.9);
       margin:12px 0;
     }
-    .row suggesting{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
     .col{display:flex;flex-direction:column;gap:10px;}
     .pill{
@@ -243,6 +238,14 @@
       line-height:1.25;
       text-align:center; /* 标题居中 */
     }
+    .poemAuthor{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:12px;       /* 朝代/作者更小 */
+      line-height:1.6;
+      text-align:center;    /* 居中 */
+      font-weight:650;
+    }
     .poemMeta{
       margin-top:6px;
       color:var(--muted);
@@ -251,7 +254,10 @@
     }
     .poemMetaBottom{
       margin-top:10px;
-      text-align:center; /* 记录日期在底部并居中 */
+      text-align:center; /* 底部信息居中 */
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.6;
     }
     .poemLines{
       margin-top:12px;
@@ -273,7 +279,7 @@
     .poemActions{
       margin-top:12px;
       display:flex;
-      justify-content:flex-end; /* 按钮保持右下角 */
+      justify-content:flex-end; /* 按钮保持不变：右下角 */
       gap:8px;
       flex-wrap:wrap;
     }
@@ -505,7 +511,6 @@
 
 <script>
 (function(){
-  // --------- 兜底：任何错误直接显示在页面，不让“空白” ---------
   function escapeHtml(s){
     return String(s)
       .replace(/&/g,"&amp;")
@@ -520,7 +525,7 @@
       '<div style="max-width:900px;margin:40px auto;padding:16px;font-family:system-ui,-apple-system,Segoe UI,PingFang SC,Microsoft YaHei,Arial;">' +
       '<h2 style="margin:0 0 12px 0;">页面脚本出错（已停止渲染）</h2>' +
       '<div style="color:#6b7280;line-height:1.6;margin-bottom:12px;">' +
-      '请把下面错误信息截图发我，我能立刻定位原因（常见是浏览器兼容或复制不完整）。' +
+      '请把下面错误信息截图发我（常见是浏览器兼容或复制不完整）。' +
       '</div>' +
       '<pre style="white-space:pre-wrap;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px;line-height:1.5;">' +
       escapeHtml(msg) +
@@ -533,7 +538,6 @@
     });
   }
 
-  // --------- 工具函数（ES5 兼容） ---------
   function nowTs(){ return new Date().getTime(); }
   function pad2(n){ return (n<10 ? "0" : "") + n; }
   function dateKey(d){
@@ -558,19 +562,16 @@
     }
     return out;
   }
+  function trim1(s){ return String(s || "").replace(/^\s+|\s+$/g,""); }
   function normTitle(t){
-    return String(t || "").replace(/^\s+|\s+$/g,"").replace(/\s+/g," ");
+    return trim1(t).replace(/\s+/g," ");
   }
   function uuid(){
-    try{
-      if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
-    }catch(_){}
+    try{ if(window.crypto && crypto.randomUUID) return crypto.randomUUID(); }catch(_){}
     return "id_" + Math.random().toString(16).slice(2) + "_" + nowTs();
   }
 
-  // --------- 存储 ---------
   var LS_KEY = "poem_journal_v2";
-
   function saveDB(db){
     try{ localStorage.setItem(LS_KEY, JSON.stringify(db)); }catch(e){}
   }
@@ -598,13 +599,11 @@
       r.poemLines = safeLines(r.poemLines || []);
       if(r.poemLines.length === 0) r.poemLines = [""];
 
-      // 兼容老字段 highlightIndex -> highlightIndices
       if(!isArray(r.highlightIndices)){
         if(typeof r.highlightIndex === "number") r.highlightIndices = [r.highlightIndex];
         else r.highlightIndices = [0];
       }
 
-      // 修正索引范围并去重
       var maxIdx = Math.max(0, r.poemLines.length - 1);
       var seen = {};
       var fixed = [];
@@ -613,10 +612,7 @@
         if(isNaN(idx)) continue;
         if(idx<0) idx=0;
         if(idx>maxIdx) idx=maxIdx;
-        if(!seen[idx]){
-          seen[idx]=true;
-          fixed.push(idx);
-        }
+        if(!seen[idx]){ seen[idx]=true; fixed.push(idx); }
       }
       fixed.sort(function(a,b){return a-b;});
       if(fixed.length === 0) fixed = [0];
@@ -633,19 +629,14 @@
   function loadDB(){
     try{
       var raw = localStorage.getItem(LS_KEY);
-      if(raw){
-        var db = JSON.parse(raw);
-        return migrateDB(db);
-      }
+      if(raw) return migrateDB(JSON.parse(raw));
     }catch(e){}
-    // 兼容 v1
     try{
       var raw1 = localStorage.getItem("poem_journal_v1");
       if(raw1){
         var old = JSON.parse(raw1);
         if(old && isArray(old.records)){
-          var db2 = { version:3, records: old.records, ui: old.ui || {} };
-          return migrateDB(db2);
+          return migrateDB({ version:3, records: old.records, ui: old.ui || {} });
         }
       }
     }catch(e){}
@@ -654,22 +645,54 @@
 
   var db = loadDB();
 
-  // --------- 复习逻辑 ---------
   var REVIEW_INTERVAL_DAYS = [1,3,7,14,30,60,120];
-
   function nextDueFrom(count, fromTs){
     var idx = count-1;
     if(idx<0) idx=0;
     if(idx>REVIEW_INTERVAL_DAYS.length-1) idx=REVIEW_INTERVAL_DAYS.length-1;
     return fromTs + REVIEW_INTERVAL_DAYS[idx]*24*60*60*1000;
   }
-
   function isDue(rec, now){
     now = now || nowTs();
     if(rec.nextDueAt != null) return now >= rec.nextDueAt;
     if(!rec.lastReviewedAt) return true;
     if(!rec.reviewCount || rec.reviewCount<=0) return now >= (rec.lastReviewedAt + 24*60*60*1000);
     return now >= nextDueFrom(rec.reviewCount, rec.lastReviewedAt);
+  }
+
+  function findRecord(id){
+    for(var i=0;i<db.records.length;i++){
+      if(db.records[i].id === id) return db.records[i];
+    }
+    return null;
+  }
+
+  // ✅ 标题：去掉书名号，只保留题目
+  function recTitle(rec){
+    var t = normTitle(rec.title);
+    return t ? t : "（未命名）";
+  }
+
+  // ✅ 朝代/作者一行（小字）
+  function recAuthorLine(rec){
+    var parts = [];
+    var d = trim1(rec.dynasty);
+    var a = trim1(rec.author);
+    if(d) parts.push(d);
+    if(a) parts.push(a);
+    return parts.join(" · ");
+  }
+
+  function daysAgo(ts){
+    if(!ts) return "未复习过";
+    var now = new Date();
+    var d = new Date(ts);
+    var n0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var d0 = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    var diff = Math.round((n0 - d0) / (24*60*60*1000));
+    if(diff <= 0) return "今天";
+    if(diff === 1) return "1 天前";
+    return diff + " 天前";
   }
 
   function markKnow(recId){
@@ -692,37 +715,6 @@
     rec.updatedAt = t;
     saveDB(db);
     render();
-  }
-
-  // --------- 查找/辅助 ---------
-  function findRecord(id){
-    for(var i=0;i<db.records.length;i++){
-      if(db.records[i].id === id) return db.records[i];
-    }
-    return null;
-  }
-
-  function recTitle(rec){
-    var t = rec.title ? String(rec.title).replace(/^\s+|\s+$/g,"") : "";
-    var a = rec.author ? String(rec.author).replace(/^\s+|\s+$/g,"") : "";
-    var d = rec.dynasty ? String(rec.dynasty).replace(/^\s+|\s+$/g,"") : "";
-    var left = t ? "《" + t + "》" : "（未命名）";
-    var right = [];
-    if(d) right.push(d);
-    if(a) right.push(a);
-    return right.length ? (left + " · " + right.join("·")) : left;
-  }
-
-  function daysAgo(ts){
-    if(!ts) return "未复习过";
-    var now = new Date();
-    var d = new Date(ts);
-    var n0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    var d0 = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-    var diff = Math.round((n0 - d0) / (24*60*60*1000));
-    if(diff <= 0) return "今天";
-    if(diff === 1) return "1 天前";
-    return diff + " 天前";
   }
 
   function getRecordsByDate(d){
@@ -754,7 +746,6 @@
 
     var active = selected || main || (recs.length ? recs[0] : null);
 
-    // options：main + 当天记录去重
     var options = [];
     var seen = {};
     if(main){ options.push(main); seen[main.id]=true; }
@@ -775,12 +766,11 @@
       if(arr[i].id !== excludeId) pool.push(arr[i]);
     }
     if(!pool.length) pool = arr.slice(0);
-    var idx = Math.floor(Math.random() * pool.length);
-    return pool[idx];
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 
   function groupByDate(records){
-    var groups = {}; // date -> array
+    var groups = {};
     for(var i=0;i<records.length;i++){
       var r = records[i];
       var k = r.createdDate || "未知日期";
@@ -794,18 +784,17 @@
         keys.push(key);
       }
     }
-    keys.sort(function(a,b){ return a<b ? 1 : -1; }); // desc
+    keys.sort(function(a,b){ return a<b ? 1 : -1; });
     return { keys:keys, groups:groups };
   }
 
-  // --------- DOM 引用 ---------
+  // DOM
   var left = document.getElementById("leftCard");
   var right = document.getElementById("rightCard");
 
   var tabToday = document.getElementById("tabToday");
   var tabHistory = document.getElementById("tabHistory");
   var tabBackup = document.getElementById("tabBackup");
-
   var btnAddTop = document.getElementById("btnAddTop");
 
   var modalMask = document.getElementById("modalMask");
@@ -828,12 +817,9 @@
   var btnClearSel = document.getElementById("btnClearSel");
   var btnSelectAll = document.getElementById("btnSelectAll");
 
-  // --------- Tab ---------
+  // Tabs
   var activeTab = db.ui.activeTab || "today";
-  function persistUI(){
-    db.ui.activeTab = activeTab;
-    saveDB(db);
-  }
+  function persistUI(){ db.ui.activeTab = activeTab; saveDB(db); }
   function setActiveTab(){
     tabToday.className = tabToday.className.replace(/\bactive\b/g,"").replace(/\s+/g," ").replace(/^\s+|\s+$/g,"");
     tabHistory.className = tabHistory.className.replace(/\bactive\b/g,"").replace(/\s+/g," ").replace(/^\s+|\s+$/g,"");
@@ -846,18 +832,14 @@
   tabHistory.onclick = function(){ activeTab="history"; persistUI(); render(); };
   tabBackup.onclick = function(){ activeTab="backup"; persistUI(); render(); };
 
-  // --------- Modal 状态（不用 Set，兼容） ---------
+  // Modal state
   var modalMode = "add";
   var editingId = null;
   var editingOriginalDate = null;
 
-  // 选择重点句：用对象当集合
-  var selectedMap = {}; // idx -> true
-
-  function selectedSize(){
-    var c=0; for(var k in selectedMap){ if(selectedMap.hasOwnProperty(k)) c++; }
-    return c;
-  }
+  // selected highlight lines: object as set
+  var selectedMap = {};
+  function selectedSize(){ var c=0; for(var k in selectedMap){ if(selectedMap.hasOwnProperty(k)) c++; } return c; }
   function clearSelected(){ selectedMap = {}; }
   function addSelected(idx){ selectedMap[String(idx)] = true; }
   function hasSelected(idx){ return !!selectedMap[String(idx)]; }
@@ -866,26 +848,17 @@
     if(selectedMap[k]) delete selectedMap[k];
     else selectedMap[k]=true;
   }
-  function ensureAtLeastOne(){
-    if(selectedSize()===0) addSelected(0);
-  }
+  function ensureAtLeastOne(){ if(selectedSize()===0) addSelected(0); }
   function selectedToArray(){
     var arr = [];
-    for(var k in selectedMap){
-      if(selectedMap.hasOwnProperty(k)) arr.push(parseInt(k,10));
-    }
+    for(var k in selectedMap){ if(selectedMap.hasOwnProperty(k)) arr.push(parseInt(k,10)); }
     arr.sort(function(a,b){return a-b;});
     return arr;
   }
   function arrayToSelected(arr){
     selectedMap = {};
-    if(!arr || !arr.length){
-      addSelected(0);
-      return;
-    }
-    for(var i=0;i<arr.length;i++){
-      addSelected(arr[i]);
-    }
+    if(!arr || !arr.length){ addSelected(0); return; }
+    for(var i=0;i<arr.length;i++) addSelected(arr[i]);
     ensureAtLeastOne();
   }
 
@@ -962,7 +935,7 @@
       selCount.innerHTML = "0";
       return;
     }
-    // 纠正选择范围
+
     var maxIdx = lines.length - 1;
     var newMap = {};
     for(var k in selectedMap){
@@ -976,7 +949,6 @@
     }
     selectedMap = newMap;
     ensureAtLeastOne();
-
     selCount.innerHTML = String(selectedSize());
 
     var html = "";
@@ -990,7 +962,7 @@
     }
     linePicker.innerHTML = html;
 
-    varels = linePicker.querySelectorAll(".pickLine");
+    var els = linePicker.querySelectorAll(".pickLine");
     for(var j=0;j<els.length;j++){
       els[j].onclick = function(){
         var idx2 = parseInt(this.getAttribute("data-idx"),10);
@@ -1010,7 +982,6 @@
     var poemLines = safeLines(String(fPoem.value || "").split("\n"));
     if(!poemLines.length){ alert("请先输入诗词正文（至少一行）。"); return; }
 
-    // 生成 highlightIndices
     var maxIdx = Math.max(0, poemLines.length - 1);
     var arr = selectedToArray();
     var fixed = [];
@@ -1028,29 +999,28 @@
     var payload = {
       createdDate: d,
       title: titleNow,
-      author: String(fAuthor.value || "").replace(/^\s+|\s+$/g,"") || null,
-      dynasty: String(fDynasty.value || "").replace(/^\s+|\s+$/g,"") || null,
+      author: trim1(fAuthor.value) || null,
+      dynasty: trim1(fDynasty.value) || null,
       poemLines: poemLines,
       highlightIndices: fixed,
-      note: String(fNote.value || "").replace(/^\s+|\s+$/g,"") || null
+      note: trim1(fNote.value) || null
     };
 
     if(modalMode === "add"){
-      // 全库按题目去重
       var dup = null;
       for(var k=0;k<db.records.length;k++){
         if(normTitle(db.records[k].title) === titleNow){ dup = db.records[k]; break; }
       }
       if(dup){
         var goEdit = confirm(
-          "检测到已存在同题目记录：《" + titleNow + "》\n" +
+          "检测到已存在同题目记录：“" + titleNow + "”\n" +
           "原记录日期：" + (dup.createdDate || "未知") + "\n\n" +
           "点“确定”去编辑旧记录；点“取消”继续下一步。"
         );
         if(goEdit){ closeModal(); openEditModal(dup.id); return; }
 
         var setMain = confirm(
-          "是否将“已有的《" + titleNow + "》”设为 " + d + " 的主诗？\n（不新增记录，只设置主诗指向）"
+          "是否将“已有的“" + titleNow + "””设为 " + d + " 的主诗？\n（不新增记录，只设置主诗指向）"
         );
         if(setMain){
           setMainForDate(d, dup.id);
@@ -1097,12 +1067,11 @@
       var rec2 = findRecord(editingId);
       if(!rec2) return;
 
-      // 题目冲突检查
       for(var x=0;x<db.records.length;x++){
         var rr = db.records[x];
         if(rr.id !== rec2.id && normTitle(rr.title) === titleNow){
           var goEdit2 = confirm(
-            "题目《" + titleNow + "》已存在另一条记录（日期：" + (rr.createdDate || "未知") + "）。\n\n" +
+            "题目“" + titleNow + "”已存在另一条记录（日期：" + (rr.createdDate || "未知") + "）。\n\n" +
             "点“确定”去编辑那条已有记录；点“取消”返回修改。"
           );
           if(goEdit2){ closeModal(); openEditModal(rr.id); }
@@ -1175,35 +1144,36 @@
     render();
   };
 
-  // --------- 渲染 ---------
   function buildHighlightMap(indices){
     var m = {};
     if(indices && indices.length){
-      for(var i=0;i<indices.length;i++){
-        m[String(indices[i])] = true;
-      }
+      for(var i=0;i<indices.length;i++) m[String(indices[i])] = true;
     }
     return m;
   }
 
-  // ✅ 这里已改：记录日期移到底部
+  // ✅ 改动点：上次复习/复习次数 + 记录日期 合并到底部一行；朝代/作者单独一行小字；标题无书名号
   function renderPoemCard(rec, actionsHtml){
     var lines = safeLines(rec.poemLines);
     var hi = buildHighlightMap(rec.highlightIndices || []);
     var title = recTitle(rec);
+    var authorLine = recAuthorLine(rec);
 
-    // 顶部 meta：不放记录日期
-    var metaTop = [];
-    metaTop.push("上次复习：" + (rec.lastReviewedAt ? daysAgo(rec.lastReviewedAt) : "未复习过"));
-    metaTop.push("复习次数：" + (rec.reviewCount || 0));
-
-    // 底部日期
-    var dateLine = rec.createdDate ? ("记录日期：" + rec.createdDate) : "";
+    var reviewedTxt = rec.lastReviewedAt ? daysAgo(rec.lastReviewedAt) : "未复习过";
+    var bottomParts = [];
+    bottomParts.push("上次复习：" + reviewedTxt);
+    bottomParts.push("复习次数：" + (rec.reviewCount || 0));
+    if(rec.createdDate) bottomParts.push("记录日期：" + rec.createdDate);
+    var bottomLine = bottomParts.join(" · ");
 
     var html = '';
     html += '<div class="poemCard">';
     html +=   '<div class="poemTitle">' + escapeHtml(title) + '</div>';
-    html +=   '<div class="poemMeta">' + escapeHtml(metaTop.join(" · ")) + '</div>';
+    if(authorLine){
+      html += '<div class="poemAuthor">' + escapeHtml(authorLine) + '</div>';
+    }else{
+      html += '<div class="poemAuthor" style="visibility:hidden">占位</div>';
+    }
 
     html +=   '<div class="poemLines">';
     for(var i=0;i<lines.length;i++){
@@ -1213,15 +1183,11 @@
     html +=   '</div>';
 
     if(rec.note){
-      html += '<div class="poemMeta" style="margin-top:8px">备注：' + escapeHtml(rec.note) + '</div>';
+      html += '<div class="poemMeta" style="margin-top:8px;text-align:center">备注：' + escapeHtml(rec.note) + '</div>';
     }
 
     html +=   '<div class="poemActions">' + (actionsHtml || "") + '</div>';
-
-    if(dateLine){
-      html += '<div class="poemMeta poemMetaBottom">' + escapeHtml(dateLine) + '</div>';
-    }
-
+    html +=   '<div class="poemMetaBottom">' + escapeHtml(bottomLine) + '</div>';
     html += '</div>';
     return html;
   }
@@ -1296,7 +1262,6 @@
     rightHtml += '<div class="hr"></div><div class="pill">提示</div><div class="meta">数据保存在本地浏览器。建议定期去“备份”导出 JSON。</div>';
     right.innerHTML = rightHtml;
 
-    // 绑定事件
     var mainDateEl = document.getElementById("mainDate");
     if(mainDateEl){
       mainDateEl.onchange = function(e){
@@ -1369,10 +1334,14 @@
 
   function renderMiniRow(rec){
     var reviewed = rec.lastReviewedAt ? daysAgo(rec.lastReviewedAt) : "未复习过";
+    var authorLine = recAuthorLine(rec);
     var html = '';
     html += '<div class="miniRow">';
     html +=   '<div class="left">';
     html +=     '<div style="font-weight:850;font-size:14px">' + escapeHtml(recTitle(rec)) + '</div>';
+    if(authorLine){
+      html +=   '<div class="meta" style="font-size:12px">' + escapeHtml(authorLine) + '</div>';
+    }
     html +=     '<div class="meta">记录日期：' + escapeHtml(rec.createdDate || "") + '</div>';
     html +=     '<div class="meta">上次复习：' + escapeHtml(reviewed) + ' · 复习次数：' + (rec.reviewCount||0) + '</div>';
     html +=     '<div id="full_' + rec.id + '" style="display:none;margin-top:10px">';
@@ -1402,7 +1371,7 @@
 
   function renderHistory(){
     var total = db.records.length;
-    var q = String(historyQuery || "").replace(/^\s+|\s+$/g,"");
+    var q = trim1(historyQuery);
 
     var filtered = [];
     if(q){
@@ -1417,7 +1386,6 @@
         var pl = safeLines(r.poemLines || []);
         for(var j=0;j<pl.length;j++) hay.push(pl[j]);
         if(r.note) hay.push(r.note);
-
         if(hay.join("\n").toLowerCase().indexOf(ql) >= 0) filtered.push(r);
       }
     }else{
@@ -1523,11 +1491,13 @@
     var payload = { exportedAt: nowTs(), version: db.version || 3, records: db.records, ui: db.ui };
     downloadText("poem-journal-backup_" + dateKey() + ".json", JSON.stringify(payload, null, 2));
   }
+
   function renderBackup(){
     var total = db.records.length;
     var lastUpdated = "无";
     if(total){
       var max = 0;
+      // eslint-disable-next-line no-redeclare
       for(var i=0;i<db.records.length;i++){
         var u = db.records[i].updatedAt || 0;
         if(u > max) max = u;
@@ -1560,12 +1530,7 @@
     return renderToday();
   }
 
-  // 绑定打开弹窗
-  btnAddTop.onclick = function(){ openAddModal(); };
-
-  // 首次渲染
   try{ render(); }catch(e){ showFatal(e); }
-
 })();
 </script>
 </body>
