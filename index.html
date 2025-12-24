@@ -6,15 +6,12 @@
   <title>每日诗词记录 · 主诗 + 随机复习</title>
   <style>
     :root{
-      /* 背景保持白色 */
       --page:#ffffff;
 
-      /* 基础色 */
       --text:#111827;
       --muted:#6b7280;
       --border:#e5e7eb;
 
-      /* 主题强调 */
       --accent:#2563eb;
       --accent-soft: rgba(37,99,235,.10);
 
@@ -22,16 +19,13 @@
       --warn:#f59e0b;
       --danger:#ef4444;
 
-      /* 版式 */
       --radius-lg:18px;
       --radius-md:14px;
       --radius-sm:12px;
 
-      /* 阴影更克制、更高级 */
       --shadow-sm: 0 6px 18px rgba(17,24,39,.06);
       --shadow-md: 0 14px 36px rgba(17,24,39,.10);
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -43,14 +37,12 @@
       letter-spacing: .1px;
     }
 
-    /* 顶部条：更像 App */
     .topbar{
       position:sticky;
       top:0;
       z-index:10;
-      background:rgba(255,255,255,.90);
-      backdrop-filter:saturate(180%) blur(10px);
-      border-bottom:1px solid rgba(229,231,235,.7);
+      background:rgba(255,255,255,.92);
+      border-bottom:1px solid rgba(229,231,235,.75);
     }
     .topbar-inner{
       max-width:1120px;
@@ -81,10 +73,9 @@
       line-height:1.5;
     }
 
-    /* Tabs：分段控制风格 */
     .tabs{
       display:flex;
-      gap:8px;
+      gap:10px;
       align-items:center;
       flex-wrap:wrap;
     }
@@ -114,7 +105,6 @@
       color:var(--accent);
     }
 
-    /* 按钮统一 */
     .btn{
       appearance:none;
       border:1px solid var(--border);
@@ -149,7 +139,6 @@
     .btn.warn{ border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.10); box-shadow:none; }
     .btn.danger{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); box-shadow:none; }
 
-    /* 主体布局 */
     .wrap{
       max-width:1120px;
       margin:18px auto 34px;
@@ -220,10 +209,8 @@
       line-height:1.7;
     }
 
-    /* 输入控件 */
     label{font-size:12px;color:var(--muted);font-weight:650;}
     input[type="text"], textarea, select, input[type="date"]{
-      width:auto;
       background:#fff;
       color:var(--text);
       border:1px solid rgba(229,231,235,.95);
@@ -231,11 +218,6 @@
       padding:10px 12px;
       font-size:14px;
       outline:none;
-      transition: border-color .16s ease, box-shadow .16s ease;
-    }
-    input[type="text"]:focus, textarea:focus, select:focus, input[type="date"]:focus{
-      border-color: rgba(37,99,235,.45);
-      box-shadow: 0 0 0 4px rgba(37,99,235,.10);
     }
     textarea{
       width:100%;
@@ -245,7 +227,6 @@
     }
     select{min-width:260px}
 
-    /* ======== 诗词展示卡：更“书本感” ======== */
     .poemCard{
       margin-top:10px;
       background: linear-gradient(180deg, rgba(17,24,39,.02), rgba(17,24,39,0));
@@ -276,7 +257,6 @@
       font-size:16px;
       letter-spacing:.2px;
     }
-    /* 重点句：彩色 + 加粗；不加底色 */
     .poemLine.highlight{
       color:var(--accent);
       font-weight:900;
@@ -290,7 +270,6 @@
       flex-wrap:wrap;
     }
 
-    /* 历史区折叠 */
     details{
       border:1px solid rgba(229,231,235,.95);
       border-radius: var(--radius-md);
@@ -332,7 +311,6 @@
       color:var(--muted)
     }
 
-    /* Modal */
     .modalMask{
       position:fixed;
       inset:0;
@@ -370,7 +348,6 @@
       line-height:1.6;
       display:flex;
       gap:10px;
-      transition: background .12s ease, border-color .12s ease;
     }
     .pickLine:hover{background:rgba(17,24,39,.03)}
     .pickLine.active{
@@ -395,14 +372,24 @@
     }
     .switch input{transform:scale(1.12)}
 
-    @media (prefers-reduced-motion: reduce){
-      *{transition:none !important}
-      .btn:active{transform:none}
+    noscript{
+      display:block;
+      max-width:1120px;
+      margin:18px auto;
+      padding:12px 16px;
+      border:1px solid rgba(239,68,68,.25);
+      background: rgba(239,68,68,.08);
+      border-radius:14px;
+      color:#7f1d1d;
+      font-size:13px;
+      line-height:1.7;
     }
   </style>
 </head>
 
 <body>
+  <noscript>检测到浏览器禁用了 JavaScript，因此页面无法渲染内容。请启用 JavaScript 后刷新。</noscript>
+
   <div class="topbar">
     <div class="topbar-inner">
       <div class="brand">
@@ -427,7 +414,6 @@
     </div>
   </div>
 
-  <!-- 新增/编辑 Modal -->
   <div class="modalMask" id="modalMask" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="cardHead">
@@ -511,7 +497,7 @@
 
 <script>
 (function(){
-  /** 兜底：白屏时也能看到错误 */
+  // --------- 兜底：任何错误直接显示在页面，不让“空白” ---------
   function escapeHtml(s){
     return String(s)
       .replace(/&/g,"&amp;")
@@ -523,27 +509,25 @@
   function showFatal(err){
     var msg = (err && err.stack) ? err.stack : String(err);
     document.body.innerHTML =
-      '<div style="max-width:900px;margin:40px auto;padding:16px;font-family:system-ui, -apple-system, Segoe UI, PingFang SC, Microsoft YaHei, Arial;">' +
+      '<div style="max-width:900px;margin:40px auto;padding:16px;font-family:system-ui,-apple-system,Segoe UI,PingFang SC,Microsoft YaHei,Arial;">' +
       '<h2 style="margin:0 0 12px 0;">页面脚本出错（已停止渲染）</h2>' +
       '<div style="color:#6b7280;line-height:1.6;margin-bottom:12px;">' +
-      '把下面错误信息截图发我，我可以精确定位是哪一行导致的。' +
+      '请把下面错误信息截图发我，我能立刻定位原因（常见是浏览器兼容或复制不完整）。' +
       '</div>' +
       '<pre style="white-space:pre-wrap;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px;line-height:1.5;">' +
       escapeHtml(msg) +
       '</pre>' +
       '</div>';
   }
-  window.addEventListener('error', function(e){
-    try{ showFatal(e.error || e.message || e); }catch(_){}
-  });
+  if (window.addEventListener){
+    window.addEventListener('error', function(e){
+      try{ showFatal(e.error || e.message || e); }catch(_){}
+    });
+  }
 
-  /** =========================
-   *  Storage & schema
-   * ========================= */
-  var LS_KEY = "poem_journal_v2";
-
-  function nowTs(){ return Date.now(); }
-  function pad2(n){ return String(n).padStart(2,"0"); }
+  // --------- 工具函数（ES5 兼容） ---------
+  function nowTs(){ return new Date().getTime(); }
+  function pad2(n){ return (n<10 ? "0" : "") + n; }
   function dateKey(d){
     d = d || new Date();
     return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate());
@@ -553,31 +537,40 @@
     d.setDate(d.getDate() - 1);
     return dateKey(d);
   }
-  function uuid(){
-    if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
-    return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now();
+  function isArray(x){ return Object.prototype.toString.call(x) === "[object Array]"; }
+  function ensurePlainObject(x){
+    return (x && typeof x === "object" && !isArray(x)) ? x : {};
   }
   function safeLines(lines){
-    if(!Array.isArray(lines)) return [];
-    return lines.map(function(x){ return String(x||"").trim(); }).filter(function(x){ return x.length>0; });
+    if(!isArray(lines)) return [];
+    var out = [];
+    for(var i=0;i<lines.length;i++){
+      var s = String(lines[i] || "").replace(/^\s+|\s+$/g,"");
+      if(s) out.push(s);
+    }
+    return out;
   }
   function normTitle(t){
-    return String(t || "").trim().replace(/\s+/g, " ");
+    return String(t || "").replace(/^\s+|\s+$/g,"").replace(/\s+/g," ");
   }
-  function ensurePlainObject(x){
-    return (x && typeof x === "object" && !Array.isArray(x)) ? x : {};
-  }
-  function saveDB(db){
+  function uuid(){
     try{
-      localStorage.setItem(LS_KEY, JSON.stringify(db));
-    }catch(e){
-      console.warn("localStorage setItem failed:", e);
-    }
+      if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    }catch(_){}
+    return "id_" + Math.random().toString(16).slice(2) + "_" + nowTs();
   }
+
+  // --------- 存储 ---------
+  var LS_KEY = "poem_journal_v2";
+
+  function saveDB(db){
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(db)); }catch(e){}
+  }
+
   function migrateDB(db){
     db = db || {};
     db.version = db.version || 3;
-    db.records = Array.isArray(db.records) ? db.records : [];
+    db.records = isArray(db.records) ? db.records : [];
     db.ui = ensurePlainObject(db.ui);
 
     db.ui.activeTab = db.ui.activeTab || "today";
@@ -587,64 +580,64 @@
     db.ui.historyQuery = (db.ui.historyQuery != null) ? String(db.ui.historyQuery) : "";
     db.ui.reviewRandomId = db.ui.reviewRandomId || null;
 
-    var changed = false;
-    db.records.forEach(function(r){
-      if(!r.id){ r.id = uuid(); changed = true; }
+    for(var i=0;i<db.records.length;i++){
+      var r = db.records[i];
+      if(!r.id) r.id = uuid();
       r.createdDate = r.createdDate || dateKey();
       r.createdAt = r.createdAt || nowTs();
       r.updatedAt = r.updatedAt || r.createdAt;
 
       r.poemLines = safeLines(r.poemLines || []);
-      if(r.poemLines.length === 0){ r.poemLines = [""]; changed = true; }
+      if(r.poemLines.length === 0) r.poemLines = [""];
 
-      if(!Array.isArray(r.highlightIndices)){
-        if(Number.isInteger(r.highlightIndex)) r.highlightIndices = [r.highlightIndex];
+      // 兼容老字段 highlightIndex -> highlightIndices
+      if(!isArray(r.highlightIndices)){
+        if(typeof r.highlightIndex === "number") r.highlightIndices = [r.highlightIndex];
         else r.highlightIndices = [0];
-        changed = true;
       }
+
+      // 修正索引范围并去重
       var maxIdx = Math.max(0, r.poemLines.length - 1);
       var seen = {};
-      r.highlightIndices = (r.highlightIndices || [])
-        .map(function(x){ return parseInt(x,10); })
-        .filter(function(x){ return Number.isFinite(x); })
-        .map(function(x){
-          if(x<0) x=0;
-          if(x>maxIdx) x=maxIdx;
-          return x;
-        })
-        .filter(function(x){
-          if(seen[x]) return false;
-          seen[x]=true;
-          return true;
-        })
-        .sort(function(a,b){ return a-b; });
-      if(r.highlightIndices.length === 0){ r.highlightIndices = [0]; changed = true; }
+      var fixed = [];
+      for(var j=0;j<r.highlightIndices.length;j++){
+        var idx = parseInt(r.highlightIndices[j],10);
+        if(isNaN(idx)) continue;
+        if(idx<0) idx=0;
+        if(idx>maxIdx) idx=maxIdx;
+        if(!seen[idx]){
+          seen[idx]=true;
+          fixed.push(idx);
+        }
+      }
+      fixed.sort(function(a,b){return a-b;});
+      if(fixed.length === 0) fixed = [0];
+      r.highlightIndices = fixed;
 
-      if(r.lastReviewedAt === undefined){ r.lastReviewedAt = null; changed = true; }
-      if(r.reviewCount === undefined){ r.reviewCount = 0; changed = true; }
-      if(r.nextDueAt === undefined){ r.nextDueAt = null; changed = true; }
-    });
-
-    if(changed) saveDB(db);
+      if(typeof r.lastReviewedAt === "undefined") r.lastReviewedAt = null;
+      if(typeof r.reviewCount === "undefined") r.reviewCount = 0;
+      if(typeof r.nextDueAt === "undefined") r.nextDueAt = null;
+    }
+    saveDB(db);
     return db;
   }
+
   function loadDB(){
     try{
       var raw = localStorage.getItem(LS_KEY);
       if(raw){
         var db = JSON.parse(raw);
-        if(db && Array.isArray(db.records)) return migrateDB(db);
+        return migrateDB(db);
       }
     }catch(e){}
+    // 兼容 v1
     try{
       var raw1 = localStorage.getItem("poem_journal_v1");
       if(raw1){
         var old = JSON.parse(raw1);
-        if(old && Array.isArray(old.records)){
+        if(old && isArray(old.records)){
           var db2 = { version:3, records: old.records, ui: old.ui || {} };
-          var migrated = migrateDB(db2);
-          saveDB(migrated);
-          return migrated;
+          return migrateDB(db2);
         }
       }
     }catch(e){}
@@ -653,23 +646,26 @@
 
   var db = loadDB();
 
-  /** =========================
-   *  Review scheduling
-   * ========================= */
+  // --------- 复习逻辑 ---------
   var REVIEW_INTERVAL_DAYS = [1,3,7,14,30,60,120];
+
   function nextDueFrom(count, fromTs){
-    var idx = Math.max(0, Math.min(REVIEW_INTERVAL_DAYS.length-1, count-1));
+    var idx = count-1;
+    if(idx<0) idx=0;
+    if(idx>REVIEW_INTERVAL_DAYS.length-1) idx=REVIEW_INTERVAL_DAYS.length-1;
     return fromTs + REVIEW_INTERVAL_DAYS[idx]*24*60*60*1000;
   }
+
   function isDue(rec, now){
     now = now || nowTs();
     if(rec.nextDueAt != null) return now >= rec.nextDueAt;
     if(!rec.lastReviewedAt) return true;
-    if(!rec.reviewCount || rec.reviewCount <= 0) return now >= (rec.lastReviewedAt + 24*60*60*1000);
+    if(!rec.reviewCount || rec.reviewCount<=0) return now >= (rec.lastReviewedAt + 24*60*60*1000);
     return now >= nextDueFrom(rec.reviewCount, rec.lastReviewedAt);
   }
+
   function markKnow(recId){
-    var rec = db.records.find(function(r){ return r.id === recId; });
+    var rec = findRecord(recId);
     if(!rec) return;
     var t = nowTs();
     rec.reviewCount = (rec.reviewCount || 0) + 1;
@@ -680,7 +676,7 @@
     render();
   }
   function markAgain(recId){
-    var rec = db.records.find(function(r){ return r.id === recId; });
+    var rec = findRecord(recId);
     if(!rec) return;
     var t = nowTs();
     rec.lastReviewedAt = t;
@@ -690,17 +686,25 @@
     render();
   }
 
-  /** =========================
-   *  Helpers
-   * ========================= */
-  function recTitle(rec){
-    var t = rec.title ? String(rec.title).trim() : "";
-    var a = rec.author ? String(rec.author).trim() : "";
-    var d = rec.dynasty ? String(rec.dynasty).trim() : "";
-    var left = t ? "《" + t + "》" : "（未命名）";
-    var right = [d,a].filter(Boolean).join("·");
-    return right ? (left + " · " + right) : left;
+  // --------- 查找/辅助 ---------
+  function findRecord(id){
+    for(var i=0;i<db.records.length;i++){
+      if(db.records[i].id === id) return db.records[i];
+    }
+    return null;
   }
+
+  function recTitle(rec){
+    var t = rec.title ? String(rec.title).replace(/^\s+|\s+$/g,"") : "";
+    var a = rec.author ? String(rec.author).replace(/^\s+|\s+$/g,"") : "";
+    var d = rec.dynasty ? String(rec.dynasty).replace(/^\s+|\s+$/g,"") : "";
+    var left = t ? "《" + t + "》" : "（未命名）";
+    var right = [];
+    if(d) right.push(d);
+    if(a) right.push(a);
+    return right.length ? (left + " · " + right.join("·")) : left;
+  }
+
   function daysAgo(ts){
     if(!ts) return "未复习过";
     var now = new Date();
@@ -712,29 +716,22 @@
     if(diff === 1) return "1 天前";
     return diff + " 天前";
   }
-  function groupByDate(records){
-    var map = new Map();
-    records.forEach(function(r){
-      var k = r.createdDate || "未知日期";
-      if(!map.has(k)) map.set(k, []);
-      map.get(k).push(r);
-    });
-    map.forEach(function(arr){
-      arr.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
-    });
-    var keys = Array.from(map.keys()).sort(function(a,b){ return a<b ? 1 : -1; });
-    return { keys: keys, map: map };
-  }
+
   function getRecordsByDate(d){
-    return db.records
-      .filter(function(r){ return r.createdDate === d; })
-      .sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+    var out = [];
+    for(var i=0;i<db.records.length;i++){
+      if(db.records[i].createdDate === d) out.push(db.records[i]);
+    }
+    out.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+    return out;
   }
+
   function setMainForDate(d, recId){
     db.ui.mainByDate = ensurePlainObject(db.ui.mainByDate);
     db.ui.mainByDate[d] = recId;
     saveDB(db);
   }
+
   function getMainRecordForDate(d){
     var recs = getRecordsByDate(d);
 
@@ -742,87 +739,38 @@
     db.ui.selectedRecordByDate = ensurePlainObject(db.ui.selectedRecordByDate);
 
     var mainId = db.ui.mainByDate[d] || null;
-    var main = mainId ? db.records.find(function(r){ return r.id === mainId; }) : null;
+    var main = mainId ? findRecord(mainId) : null;
 
     var selectedId = db.ui.selectedRecordByDate[d] || null;
-    var selected = selectedId ? db.records.find(function(r){ return r.id === selectedId; }) : null;
+    var selected = selectedId ? findRecord(selectedId) : null;
 
-    var active = selected || main || recs[0] || null;
+    var active = selected || main || (recs.length ? recs[0] : null);
 
+    // options：main + 当天记录去重
     var options = [];
     var seen = {};
     if(main){ options.push(main); seen[main.id]=true; }
-    recs.forEach(function(r){
-      if(!seen[r.id]){
-        options.push(r);
-        seen[r.id]=true;
+    for(var i=0;i<recs.length;i++){
+      if(!seen[recs[i].id]){
+        options.push(recs[i]);
+        seen[recs[i].id]=true;
       }
-    });
-
-    return { recs: recs, main: main, active: active, options: options };
+    }
+    return { recs:recs, main:main, active:active, options:options };
   }
+
   function chooseRandom(arr, excludeId){
-    if(!arr || arr.length === 0) return null;
+    if(!arr || !arr.length) return null;
     if(arr.length === 1) return arr[0];
-    var pool = excludeId ? arr.filter(function(x){ return x.id !== excludeId; }) : arr.slice();
-    if(pool.length === 0) pool = arr;
-    return pool[Math.floor(Math.random() * pool.length)];
+    var pool = [];
+    for(var i=0;i<arr.length;i++){
+      if(arr[i].id !== excludeId) pool.push(arr[i]);
+    }
+    if(!pool.length) pool = arr.slice(0);
+    var idx = Math.floor(Math.random() * pool.length);
+    return pool[idx];
   }
 
-  /** =========================
-   *  UI: Tabs
-   * ========================= */
-  var left = document.getElementById("leftCard");
-  var right = document.getElementById("rightCard");
-
-  var tabToday = document.getElementById("tabToday");
-  var tabHistory = document.getElementById("tabHistory");
-  var tabBackup = document.getElementById("tabBackup");
-
-  var activeTab = db.ui.activeTab || "today";
-  tabToday.onclick = function(){ activeTab="today"; persistUI(); render(); };
-  tabHistory.onclick = function(){ activeTab="history"; persistUI(); render(); };
-  tabBackup.onclick = function(){ activeTab="backup"; persistUI(); render(); };
-
-  function persistUI(){
-    db.ui.activeTab = activeTab;
-    saveDB(db);
-  }
-  function setActiveTab(){
-    [tabToday, tabHistory, tabBackup].forEach(function(x){ x.classList.remove("active"); });
-    if(activeTab==="today") tabToday.classList.add("active");
-    if(activeTab==="history") tabHistory.classList.add("active");
-    if(activeTab==="backup") tabBackup.classList.add("active");
-  }
-
-  /** =========================
-   *  Modal: Add/Edit
-   * ========================= */
-  var modalMask = document.getElementById("modalMask");
-  var btnAddTop = document.getElementById("btnAddTop");
-  var btnCloseModal = document.getElementById("btnCloseModal");
-  var modalTitle = document.getElementById("modalTitle");
-  var btnSave = document.getElementById("btnSave");
-  var btnDeleteInModal = document.getElementById("btnDeleteInModal");
-
-  var fDate = document.getElementById("fDate");
-  var fTitle = document.getElementById("fTitle");
-  var fAuthor = document.getElementById("fAuthor");
-  var fDynasty = document.getElementById("fDynasty");
-  var fPoem = document.getElementById("fPoem");
-  var fNote = document.getElementById("fNote");
-  var fSetAsMain = document.getElementById("fSetAsMain");
-
-  var linePicker = document.getElementById("linePicker");
-  var selCount = document.getElementById("selCount");
-  var btnClearSel = document.getElementById("btnClearSel");
-  var btnSelectAll = document.getElementById("btnSelectAll");
-
-  var modalMode = "add";
-  var editingId = null;
-  var editingOriginalDate = null;
-  var selectedHighlights = new Set();
-
-  btnAddTop.onclick = function(){ openAddModal(); };
-  btnCloseModal.onclick = function(){ closeModal(); };
-  modalMask.addEventListener("cl
+  function groupByDate(records){
+    var groups = {}; // date -> array
+    for(var i=0
