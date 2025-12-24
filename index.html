@@ -6,121 +6,281 @@
   <title>每日诗词记录 · 主诗 + 随机复习</title>
   <style>
     :root{
+      /* 背景保持白色 */
       --page:#ffffff;
-      --card:#ffffff;
+
+      /* 基础色 */
       --text:#111827;
       --muted:#6b7280;
       --border:#e5e7eb;
 
-      --accent:#2563eb; /* 重点句颜色（仅文字色） */
-      --danger:#ef4444;
+      /* 主题强调 */
+      --accent:#2563eb;
+      --accent-soft: rgba(37,99,235,.10);
+
       --good:#10b981;
       --warn:#f59e0b;
+      --danger:#ef4444;
 
-      --shadow: 0 10px 30px rgba(17,24,39,.08);
+      /* 版式 */
+      --radius-lg:18px;
+      --radius-md:14px;
+      --radius-sm:12px;
+
+      /* 阴影更克制、更高级 */
+      --shadow-sm: 0 6px 18px rgba(17,24,39,.06);
+      --shadow-md: 0 14px 36px rgba(17,24,39,.10);
     }
+
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
+      background:var(--page);
+      color:var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
         "PingFang SC","Hiragino Sans GB","Microsoft YaHei", Arial;
-      background: var(--page);
-      color:var(--text);
+      letter-spacing: .1px;
     }
-    .wrap{max-width:1100px;margin:26px auto;padding:0 16px;}
-    .top{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px;}
-    h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.2px}
-    .sub{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.5}
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+    /* 顶部条：更像 App */
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:rgba(255,255,255,.90);
+      backdrop-filter:saturate(180%) blur(10px);
+      border-bottom:1px solid rgba(229,231,235,.7);
+    }
+    .topbar-inner{
+      max-width:1120px;
+      margin:0 auto;
+      padding:14px 16px;
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width:240px;
+    }
+    .brand h1{
+      margin:0;
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:.3px;
+    }
+    .brand .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+    }
+
+    /* Tabs：分段控制风格 */
+    .tabs{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .seg{
+      display:flex;
+      gap:0;
+      border:1px solid var(--border);
+      border-radius:999px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow: var(--shadow-sm);
+    }
     .tab{
-      border:1px solid var(--border);background:transparent;color:var(--text);
-      padding:8px 10px;border-radius:10px;cursor:pointer;font-size:13px;
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      padding:10px 14px;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:650;
+      transition: background .18s ease, color .18s ease;
+      outline:none;
     }
-    .tab.active{background:#eef2ff;border-color:#c7d2fe}
-    .grid{display:grid;grid-template-columns: 1.25fr .75fr;gap:14px;}
-    @media (max-width: 980px){ .grid{grid-template-columns:1fr;} }
+    .tab:hover{background:rgba(17,24,39,.03); color:var(--text);}
+    .tab.active{
+      background:var(--accent-soft);
+      color:var(--accent);
+    }
+
+    /* 按钮统一 */
+    .btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:650;
+      transition: transform .06s ease, box-shadow .18s ease, background .18s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn:hover{ box-shadow: var(--shadow-md); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      border-color: rgba(37,99,235,.35);
+      background: linear-gradient(180deg, rgba(37,99,235,.95), rgba(37,99,235,.85));
+      color:#fff;
+    }
+    .btn.ghost{
+      background:transparent;
+      box-shadow:none;
+    }
+    .btn.small{
+      padding:7px 10px;
+      font-size:12px;
+      border-radius:10px;
+      box-shadow:none;
+    }
+    .btn.good{ border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.10); box-shadow:none; }
+    .btn.warn{ border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.10); box-shadow:none; }
+    .btn.danger{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); box-shadow:none; }
+
+    /* 主体布局 */
+    .wrap{
+      max-width:1120px;
+      margin:18px auto 34px;
+      padding:0 16px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr;}
+    }
 
     .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:16px;
+      background:#fff;
+      border:1px solid rgba(229,231,235,.9);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
       padding:14px;
-      box-shadow: var(--shadow);
     }
-
+    .cardHead{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:2px 2px 10px;
+    }
+    .cardHead h2{
+      margin:0;
+      font-size:16px;
+      font-weight:850;
+    }
+    .cardHead .sub2{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    .hr{
+      height:1px;
+      background: rgba(229,231,235,.9);
+      margin:12px 0;
+    }
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
     .col{display:flex;flex-direction:column;gap:10px;}
-    .hr{height:1px;background:var(--border);margin:12px 0;}
     .pill{
-      display:inline-flex;align-items:center;gap:6px;
-      border:1px solid var(--border);background:#f9fafb;
-      padding:6px 10px;border-radius:999px;font-size:12px;color:var(--muted);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border:1px solid rgba(229,231,235,.95);
+      border-radius:999px;
+      background: rgba(17,24,39,.02);
+      font-size:12px;
+      color:var(--muted);
+      font-weight:650;
     }
-
-    .btn{
-      background:#f3f4f6;border:1px solid #e5e7eb;color:var(--text);
-      padding:10px 12px;border-radius:10px;cursor:pointer;font-size:14px;
-    }
-    .btn:hover{filter:brightness(0.98)}
-    .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
-    .btn.good{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.35);}
-    .btn.warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35);}
-    .btn.danger{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35);}
-    .btn.ghost{background:transparent}
-    .btn.small{padding:6px 8px;font-size:12px;border-radius:9px}
-
-    label{font-size:12px;color:var(--muted);}
-    input[type="text"], textarea, select, input[type="date"]{
-      background:#fff;color:var(--text);border:1px solid var(--border);
-      border-radius:10px;padding:10px 12px;font-size:14px;outline:none;
-    }
-    textarea{width:100%;min-height:140px;resize:vertical;line-height:1.6}
-    select{min-width:240px}
-
-    .meta{color:var(--muted);font-size:13px;line-height:1.6}
+    .meta{color:var(--muted);font-size:13px;line-height:1.7}
     .notice{
-      color:#92400e;background:rgba(245,158,11,.10);
+      color:#92400e;
+      background:rgba(245,158,11,.10);
       border:1px solid rgba(245,158,11,.25);
-      padding:10px 12px;border-radius:12px;font-size:13px;line-height:1.6
+      padding:12px 12px;
+      border-radius:14px;
+      font-size:13px;
+      line-height:1.7;
     }
 
-    .titleLine{display:flex;gap:10px;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
-    .titleLine h2{font-size:16px;margin:0;font-weight:750}
-    .titleLine .sub2{font-size:12px;color:var(--muted)}
-
-    /* ======== Poem Card ======== */
-    .poemCard{
+    /* 输入控件 */
+    label{font-size:12px;color:var(--muted);font-weight:650;}
+    input[type="text"], textarea, select, input[type="date"]{
+      width:auto;
       background:#fff;
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px;
+      color:var(--text);
+      border:1px solid rgba(229,231,235,.95);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:14px;
+      outline:none;
+      transition: border-color .16s ease, box-shadow .16s ease;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus, input[type="date"]:focus{
+      border-color: rgba(37,99,235,.45);
+      box-shadow: 0 0 0 4px rgba(37,99,235,.10);
+    }
+    textarea{
+      width:100%;
+      min-height:150px;
+      resize:vertical;
+      line-height:1.7;
+    }
+    select{min-width:260px}
+
+    /* ======== 诗词展示卡：更“书本感” ======== */
+    .poemCard{
       margin-top:10px;
+      background: linear-gradient(180deg, rgba(17,24,39,.02), rgba(17,24,39,0));
+      border:1px solid rgba(229,231,235,.95);
+      border-radius: var(--radius-md);
+      padding:12px;
     }
     .poemTitle{
-      font-size:20px;
-      font-weight:850;
-      line-height:1.3;
       margin:0;
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:.3px;
+      line-height:1.25;
     }
     .poemMeta{
       margin-top:6px;
       color:var(--muted);
       font-size:12px;
-      line-height:1.5;
+      line-height:1.6;
     }
-    .poemLines{ margin-top:10px; }
+    .poemLines{
+      margin-top:12px;
+      padding:6px 4px 2px;
+    }
     .poemLine{
-      padding:6px 2px;
+      padding:6px 0;
       line-height:2.0;
       font-size:16px;
       letter-spacing:.2px;
-      border-radius:10px;
     }
-    /* 重点句：仅彩色+加粗，无底色 */
+    /* 重点句：彩色 + 加粗；不加底色 */
     .poemLine.highlight{
-      color: var(--accent);
-      font-weight: 800;
-      background: transparent;
+      color:var(--accent);
+      font-weight:900;
+      background:transparent;
     }
     .poemActions{
       margin-top:12px;
@@ -130,88 +290,137 @@
       flex-wrap:wrap;
     }
 
-    /* History */
-    details{border:1px solid var(--border);border-radius:14px;background:#fff}
+    /* 历史区折叠 */
+    details{
+      border:1px solid rgba(229,231,235,.95);
+      border-radius: var(--radius-md);
+      background:#fff;
+      box-shadow: var(--shadow-sm);
+      overflow:hidden;
+    }
     summary{
-      cursor:pointer; padding:12px;
+      cursor:pointer;
+      padding:12px;
       list-style:none;
-      display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      background: rgba(17,24,39,.02);
     }
     summary::-webkit-details-marker{display:none}
     .groupBody{padding:0 12px 12px}
     .miniRow{
-      display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
-      padding:10px 0;border-top:1px solid #f3f4f6
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      padding:12px 0;
+      border-top:1px solid rgba(229,231,235,.7);
     }
     .miniRow:first-child{border-top:none}
     .miniRow .left{min-width:260px}
     .miniRow .right{display:flex;gap:8px;flex-wrap:wrap}
     .kbd{
-      border:1px solid var(--border);background:#fff;padding:2px 6px;border-radius:8px;
-      font-size:12px;color:var(--muted)
+      border:1px solid rgba(229,231,235,.95);
+      background:#fff;
+      padding:2px 6px;
+      border-radius:8px;
+      font-size:12px;
+      color:var(--muted)
     }
 
     /* Modal */
     .modalMask{
-      position:fixed;inset:0;background:rgba(17,24,39,.45);
-      display:none;align-items:center;justify-content:center;padding:18px;
+      position:fixed;
+      inset:0;
+      background:rgba(17,24,39,.50);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:20;
     }
     .modal{
-      width:min(900px, 100%);
+      width:min(940px, 100%);
       background:#fff;
-      border:1px solid var(--border);
-      border-radius:16px;
+      border:1px solid rgba(229,231,235,.95);
+      border-radius: 18px;
       padding:14px;
-      box-shadow:0 20px 60px rgba(17,24,39,.20);
+      box-shadow: 0 24px 70px rgba(17,24,39,.25);
     }
     .split{display:grid;grid-template-columns: 1fr 1fr;gap:12px;}
     @media (max-width: 980px){ .split{grid-template-columns:1fr;} }
 
     .linePicker{
-      border:1px solid var(--border);
-      border-radius:14px;
+      border:1px solid rgba(229,231,235,.95);
+      border-radius: 14px;
       background:#fff;
       padding:10px;
-      max-height:320px;
+      max-height:340px;
       overflow:auto;
     }
     .pickLine{
-      padding:8px 10px;border-radius:12px;cursor:pointer;
-      border:1px solid transparent; line-height:1.6;
-      display:flex;gap:10px;
+      padding:8px 10px;
+      border-radius: 12px;
+      cursor:pointer;
+      border:1px solid transparent;
+      line-height:1.6;
+      display:flex;
+      gap:10px;
+      transition: background .12s ease, border-color .12s ease;
     }
-    .pickLine:hover{background:#f9fafb}
+    .pickLine:hover{background:rgba(17,24,39,.03)}
     .pickLine.active{
-      border-color:rgba(37,99,235,.30);
+      border-color: rgba(37,99,235,.35);
       color: var(--accent);
-      font-weight: 800;
+      font-weight: 900;
+      background: rgba(37,99,235,.06);
     }
-    .footNote{font-size:12px;color:var(--muted);line-height:1.6}
 
+    .footNote{font-size:12px;color:var(--muted);line-height:1.7}
     .switch{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 10px;border:1px solid var(--border);border-radius:12px;
-      background:#fff;color:var(--muted);font-size:13px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border:1px solid rgba(229,231,235,.95);
+      border-radius: 12px;
+      background:#fff;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:650;
     }
-    .switch input{transform:scale(1.1)}
+    .switch input{transform:scale(1.12)}
+
+    @media (prefers-reduced-motion: reduce){
+      *{transition:none !important}
+      .btn:active{transform:none}
+    }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
         <h1>每日诗词记录</h1>
-        <div class="sub">记录保存在当前设备/浏览器的本地存储；建议定期导出 JSON 备份。</div>
+        <p class="sub">记录保存在本地浏览器；建议定期导出 JSON 备份。</p>
       </div>
       <div class="tabs">
-        <button class="tab active" id="tabToday">今日</button>
-        <button class="tab" id="tabHistory">历史</button>
-        <button class="tab" id="tabBackup">备份</button>
+        <div class="seg">
+          <button class="tab active" id="tabToday">今日</button>
+          <button class="tab" id="tabHistory">历史</button>
+          <button class="tab" id="tabBackup">备份</button>
+        </div>
         <button class="btn primary" id="btnAddTop">+ 记录诗词</button>
       </div>
     </div>
+  </div>
 
+  <div class="wrap">
     <div class="grid">
       <div class="card" id="leftCard"></div>
       <div class="card" id="rightCard"></div>
@@ -221,7 +430,7 @@
   <!-- 新增/编辑 Modal -->
   <div class="modalMask" id="modalMask" role="dialog" aria-modal="true">
     <div class="modal">
-      <div class="titleLine">
+      <div class="cardHead">
         <h2 id="modalTitle">记录诗词</h2>
         <div class="row">
           <button class="btn ghost small" id="btnCloseModal">关闭</button>
@@ -264,7 +473,7 @@
           <div>
             <label>诗词正文（整首，建议每行一句；粘贴即可）</label>
             <textarea id="fPoem" placeholder="床前明月光&#10;疑是地上霜&#10;举头望明月&#10;低头思故乡"></textarea>
-            <div class="footNote">会自动去掉空行。重点句仅“彩色+加粗”，不加底色。</div>
+            <div class="footNote">会自动去掉空行。重点句仅“彩色 + 加粗”，不加底色。</div>
           </div>
 
           <div>
@@ -273,7 +482,7 @@
           </div>
 
           <div class="row" style="justify-content:flex-end">
-            <button class="btn danger" id="btnDeleteInModal" style="display:none">删除</button>
+            <button class="btn danger small" id="btnDeleteInModal" style="display:none">删除</button>
             <button class="btn primary" id="btnSave">保存</button>
           </div>
         </div>
@@ -317,7 +526,7 @@
       '<div style="max-width:900px;margin:40px auto;padding:16px;font-family:system-ui, -apple-system, Segoe UI, PingFang SC, Microsoft YaHei, Arial;">' +
       '<h2 style="margin:0 0 12px 0;">页面脚本出错（已停止渲染）</h2>' +
       '<div style="color:#6b7280;line-height:1.6;margin-bottom:12px;">' +
-      '这通常是浏览器不支持某些语法，或本地存储数据结构异常导致。你可以把下面错误信息截图发我，我会精确定位。' +
+      '把下面错误信息截图发我，我可以精确定位是哪一行导致的。' +
       '</div>' +
       '<pre style="white-space:pre-wrap;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px;line-height:1.5;">' +
       escapeHtml(msg) +
@@ -355,20 +564,16 @@
   function normTitle(t){
     return String(t || "").trim().replace(/\s+/g, " ");
   }
-
   function ensurePlainObject(x){
     return (x && typeof x === "object" && !Array.isArray(x)) ? x : {};
   }
-
   function saveDB(db){
     try{
       localStorage.setItem(LS_KEY, JSON.stringify(db));
     }catch(e){
-      // 写入失败不至于白屏，但会影响保存；这里先不 throw
       console.warn("localStorage setItem failed:", e);
     }
   }
-
   function migrateDB(db){
     db = db || {};
     db.version = db.version || 3;
@@ -413,7 +618,6 @@
           return true;
         })
         .sort(function(a,b){ return a-b; });
-
       if(r.highlightIndices.length === 0){ r.highlightIndices = [0]; changed = true; }
 
       if(r.lastReviewedAt === undefined){ r.lastReviewedAt = null; changed = true; }
@@ -424,7 +628,6 @@
     if(changed) saveDB(db);
     return db;
   }
-
   function loadDB(){
     try{
       var raw = localStorage.getItem(LS_KEY);
@@ -433,7 +636,6 @@
         if(db && Array.isArray(db.records)) return migrateDB(db);
       }
     }catch(e){}
-
     try{
       var raw1 = localStorage.getItem("poem_journal_v1");
       if(raw1){
@@ -446,7 +648,6 @@
         }
       }
     }catch(e){}
-
     return migrateDB({ version:3, records:[], ui:{} });
   }
 
@@ -579,7 +780,6 @@
   var tabBackup = document.getElementById("tabBackup");
 
   var activeTab = db.ui.activeTab || "today";
-
   tabToday.onclick = function(){ activeTab="today"; persistUI(); render(); };
   tabHistory.onclick = function(){ activeTab="history"; persistUI(); render(); };
   tabBackup.onclick = function(){ activeTab="backup"; persistUI(); render(); };
@@ -625,653 +825,4 @@
 
   btnAddTop.onclick = function(){ openAddModal(); };
   btnCloseModal.onclick = function(){ closeModal(); };
-  modalMask.addEventListener("click", function(e){ if(e.target === modalMask) closeModal(); });
-
-  fPoem.addEventListener("input", function(){ renderLinePicker(); });
-  btnClearSel.onclick = function(){ selectedHighlights = new Set(); renderLinePicker(); };
-  btnSelectAll.onclick = function(){
-    var lines = safeLines(String(fPoem.value || "").split("\n"));
-    selectedHighlights = new Set(lines.map(function(_,i){ return i; }));
-    renderLinePicker();
-  };
-
-  function openAddModal(){
-    modalMode = "add";
-    editingId = null;
-    editingOriginalDate = null;
-
-    modalTitle.textContent = "记录诗词";
-    btnDeleteInModal.style.display = "none";
-
-    fDate.value = dateKey();
-    fTitle.value = "";
-    fAuthor.value = "";
-    fDynasty.value = "";
-    fPoem.value = "";
-    fNote.value = "";
-    fSetAsMain.checked = true;
-
-    selectedHighlights = new Set([0]);
-    renderLinePicker();
-    modalMask.style.display = "flex";
-  }
-  function openEditModal(recId){
-    var rec = db.records.find(function(r){ return r.id === recId; });
-    if(!rec) return;
-
-    modalMode = "edit";
-    editingId = recId;
-    editingOriginalDate = rec.createdDate || null;
-
-    modalTitle.textContent = "编辑记录";
-    btnDeleteInModal.style.display = "inline-block";
-
-    fDate.value = rec.createdDate || dateKey();
-    fTitle.value = rec.title || "";
-    fAuthor.value = rec.author || "";
-    fDynasty.value = rec.dynasty || "";
-    fPoem.value = safeLines(rec.poemLines).join("\n");
-    fNote.value = rec.note || "";
-
-    selectedHighlights = new Set(rec.highlightIndices || [0]);
-
-    var d = rec.createdDate || dateKey();
-    db.ui.mainByDate = ensurePlainObject(db.ui.mainByDate);
-    fSetAsMain.checked = (db.ui.mainByDate[d] === rec.id);
-
-    renderLinePicker();
-    modalMask.style.display = "flex";
-  }
-  function closeModal(){ modalMask.style.display = "none"; }
-
-  function renderLinePicker(){
-    var lines = safeLines(String(fPoem.value || "").split("\n"));
-    if(lines.length === 0){
-      linePicker.innerHTML = '<div class="meta">先在左侧输入正文，这里会出现逐行预览。</div>';
-      selCount.textContent = "0";
-      return;
-    }
-    var maxIdx = lines.length - 1;
-
-    selectedHighlights = new Set(Array.from(selectedHighlights).map(function(i){
-      i = parseInt(i,10);
-      if(!Number.isFinite(i)) i = 0;
-      if(i<0) i=0;
-      if(i>maxIdx) i=maxIdx;
-      return i;
-    }));
-    if(selectedHighlights.size === 0) selectedHighlights.add(0);
-
-    selCount.textContent = String(selectedHighlights.size);
-
-    linePicker.innerHTML = lines.map(function(ln, idx){
-      var active = selectedHighlights.has(idx) ? "active" : "";
-      return '' +
-        '<div class="pickLine ' + active + '" data-idx="' + idx + '">' +
-        '<div style="width:28px;color:#9ca3af;font-size:12px">' + (idx+1) + '</div>' +
-        '<div style="flex:1">' + escapeHtml(ln) + '</div>' +
-        '</div>';
-    }).join("");
-
-    Array.from(linePicker.querySelectorAll(".pickLine")).forEach(function(el){
-      el.onclick = function(){
-        var idx = parseInt(el.getAttribute("data-idx"), 10);
-        if(selectedHighlights.has(idx)) selectedHighlights.delete(idx);
-        else selectedHighlights.add(idx);
-        if(selectedHighlights.size === 0) selectedHighlights.add(idx);
-        renderLinePicker();
-      };
-    });
-  }
-
-  btnSave.onclick = function(){
-    var d = fDate.value || dateKey();
-
-    var titleNow = normTitle(fTitle.value);
-    if(!titleNow){
-      alert("请填写题目（用于全库查重，避免重复记录）。");
-      return;
-    }
-
-    var poemLines = safeLines(String(fPoem.value || "").split("\n"));
-    if(poemLines.length === 0){
-      alert("请先输入诗词正文（至少一行）。");
-      return;
-    }
-
-    var maxIdx = Math.max(0, poemLines.length - 1);
-    var highlightIndices = Array.from(selectedHighlights)
-      .map(function(i){ return parseInt(i,10); })
-      .filter(function(i){ return Number.isFinite(i); })
-      .map(function(i){
-        if(i<0) i=0;
-        if(i>maxIdx) i=maxIdx;
-        return i;
-      })
-      .sort(function(a,b){ return a-b; });
-
-    if(highlightIndices.length === 0){
-      alert("请至少选择 1 行作为重点句。");
-      return;
-    }
-
-    var payload = {
-      createdDate: d,
-      title: titleNow,
-      author: String(fAuthor.value || "").trim() || null,
-      dynasty: String(fDynasty.value || "").trim() || null,
-      poemLines: poemLines,
-      highlightIndices: highlightIndices,
-      note: String(fNote.value || "").trim() || null
-    };
-
-    if(modalMode === "add"){
-      // 全库按题目去重（不允许新增重复）
-      var dup = db.records.find(function(r){ return normTitle(r.title) === titleNow; });
-      if(dup){
-        var goEdit = confirm(
-          "检测到历史中已存在同题目记录：《" + titleNow + "》\n" +
-          "原记录日期：" + (dup.createdDate || "未知") + "\n\n" +
-          "点击“确定”：去编辑那条旧记录（不会新增）。\n" +
-          "点击“取消”：继续下一步。"
-        );
-        if(goEdit){
-          closeModal();
-          openEditModal(dup.id);
-          return;
-        }
-
-        var setMain = confirm(
-          "是否将“已有的《" + titleNow + "》”设为 " + d + " 的主诗？\n" +
-          "（不新增记录，只设置主诗指向）\n\n" +
-          "点击“确定”：设为主诗\n" +
-          "点击“取消”：返回继续修改（不保存）"
-        );
-        if(setMain){
-          setMainForDate(d, dup.id);
-          db.ui.selectedDate = d;
-          db.ui.selectedRecordByDate = ensurePlainObject(db.ui.selectedRecordByDate);
-          db.ui.selectedRecordByDate[d] = dup.id;
-          saveDB(db);
-          closeModal();
-          render();
-        }
-        return;
-      }
-
-      var rec = {
-        id: uuid(),
-        createdDate: payload.createdDate,
-        title: payload.title,
-        author: payload.author,
-        dynasty: payload.dynasty,
-        poemLines: payload.poemLines,
-        highlightIndices: payload.highlightIndices,
-        note: payload.note,
-        createdAt: nowTs(),
-        updatedAt: nowTs(),
-        lastReviewedAt: null,
-        reviewCount: 0,
-        nextDueAt: null
-      };
-      db.records.unshift(rec);
-
-      if(fSetAsMain.checked){
-        setMainForDate(d, rec.id);
-      }
-
-      db.ui.selectedDate = d;
-      db.ui.selectedRecordByDate = ensurePlainObject(db.ui.selectedRecordByDate);
-      db.ui.selectedRecordByDate[d] = rec.id;
-
-      saveDB(db);
-      closeModal();
-      render();
-      return;
-    }
-
-    if(modalMode === "edit" && editingId){
-      var rec2 = db.records.find(function(r){ return r.id === editingId; });
-      if(!rec2) return;
-
-      var conflict = db.records.find(function(r){
-        return r.id !== rec2.id && normTitle(r.title) === titleNow;
-      });
-      if(conflict){
-        var goEdit2 = confirm(
-          "题目《" + titleNow + "》已存在另一条记录（日期：" + (conflict.createdDate || "未知") + "）。\n\n" +
-          "点击“确定”：去编辑那条已有记录。\n" +
-          "点击“取消”：返回继续修改（不保存）。"
-        );
-        if(goEdit2){
-          closeModal();
-          openEditModal(conflict.id);
-        }
-        return;
-      }
-
-      var oldDate = editingOriginalDate || rec2.createdDate;
-
-      rec2.createdDate = payload.createdDate;
-      rec2.title = payload.title;
-      rec2.author = payload.author;
-      rec2.dynasty = payload.dynasty;
-      rec2.poemLines = payload.poemLines;
-      rec2.highlightIndices = payload.highlightIndices;
-      rec2.note = payload.note;
-      rec2.updatedAt = nowTs();
-
-      db.ui.mainByDate = ensurePlainObject(db.ui.mainByDate);
-
-      if(oldDate && oldDate !== d && db.ui.mainByDate[oldDate] === rec2.id){
-        delete db.ui.mainByDate[oldDate];
-      }
-
-      if(fSetAsMain.checked){
-        setMainForDate(d, rec2.id);
-      }else{
-        if(db.ui.mainByDate[d] === rec2.id){
-          delete db.ui.mainByDate[d];
-          saveDB(db);
-        }
-      }
-
-      db.ui.selectedDate = d;
-      db.ui.selectedRecordByDate = ensurePlainObject(db.ui.selectedRecordByDate);
-      db.ui.selectedRecordByDate[d] = rec2.id;
-
-      saveDB(db);
-      closeModal();
-      render();
-    }
-  };
-
-  btnDeleteInModal.onclick = function(){
-    if(!editingId) return;
-    var ok = confirm("确定删除这条记录？删除后无法恢复（除非你有备份）。");
-    if(!ok) return;
-
-    var rec = db.records.find(function(r){ return r.id === editingId; });
-
-    db.ui.mainByDate = ensurePlainObject(db.ui.mainByDate);
-
-    if(rec && db.ui.mainByDate[rec.createdDate] === rec.id){
-      delete db.ui.mainByDate[rec.createdDate];
-    }
-    if(db.ui.reviewRandomId === editingId) db.ui.reviewRandomId = null;
-
-    Object.keys(db.ui.mainByDate).forEach(function(k){
-      if(db.ui.mainByDate[k] === editingId) delete db.ui.mainByDate[k];
-    });
-
-    db.records = db.records.filter(function(r){ return r.id !== editingId; });
-
-    saveDB(db);
-    closeModal();
-    render();
-  };
-
-  /** =========================
-   *  Rendering blocks
-   * ========================= */
-  function renderPoemCard(rec, actionsHtml){
-    var lines = safeLines(rec.poemLines);
-    var set = new Set(rec.highlightIndices || []);
-    var title = recTitle(rec);
-    var meta = [
-      rec.createdDate ? ("记录日期：" + rec.createdDate) : null,
-      "上次复习：" + (rec.lastReviewedAt ? daysAgo(rec.lastReviewedAt) : "未复习过"),
-      "复习次数：" + (rec.reviewCount || 0)
-    ].filter(Boolean).join(" · ");
-
-    return '' +
-      '<div class="poemCard">' +
-        '<div class="poemTitle">' + escapeHtml(title) + '</div>' +
-        '<div class="poemMeta">' + escapeHtml(meta) + '</div>' +
-        '<div class="poemLines">' +
-          lines.map(function(ln,i){
-            var cls = set.has(i) ? "poemLine highlight" : "poemLine";
-            return '<div class="' + cls + '">' + escapeHtml(ln) + '</div>';
-          }).join("") +
-        '</div>' +
-        (rec.note ? ('<div class="poemMeta" style="margin-top:8px">备注：' + escapeHtml(rec.note) + '</div>') : '') +
-        '<div class="poemActions">' + (actionsHtml || "") + '</div>' +
-      '</div>';
-  }
-
-  /** =========================
-   *  Today view
-   * ========================= */
-  function renderToday(){
-    db.ui.selectedDate = db.ui.selectedDate || yesterdayKey();
-    var selectedDate = db.ui.selectedDate;
-
-    var pack = getMainRecordForDate(selectedDate);
-    var recs = pack.recs;
-    var active = pack.active;
-    var options = pack.options;
-
-    var now = nowTs();
-    var duePool = db.records.filter(function(r){ return isDue(r, now); });
-    var pool = duePool.length ? duePool : db.records.slice();
-
-    var reviewRec = null;
-    if(pool.length){
-      var currentId = db.ui.reviewRandomId;
-      reviewRec = currentId ? pool.find(function(r){ return r.id === currentId; }) : null;
-      if(!reviewRec){
-        reviewRec = chooseRandom(pool);
-        db.ui.reviewRandomId = reviewRec ? reviewRec.id : null;
-        saveDB(db);
-      }
-    }else{
-      db.ui.reviewRandomId = null;
-      saveDB(db);
-    }
-
-    left.innerHTML =
-      '<div class="titleLine">' +
-        '<h2>当日主诗</h2>' +
-        '<div class="sub2">选日期查看；主诗可指向历史记录</div>' +
-      '</div>' +
-      '<div class="hr"></div>' +
-      '<div class="row" style="justify-content:space-between">' +
-        '<div class="row">' +
-          '<label>日期：</label>' +
-          '<input type="date" id="mainDate" value="' + escapeHtml(selectedDate) + '" />' +
-        '</div>' +
-        '<div class="pill">该日新记录：' + recs.length + ' 条</div>' +
-      '</div>' +
-      (!active ? (
-        '<div class="notice" style="margin-top:10px">' +
-          '该日期没有可显示的诗（既没有新记录，也未设置主诗）。你可以新增一条，或把历史诗设为该日主诗。' +
-        '</div>'
-      ) : (
-        (options.length > 1 ? (
-          '<div class="row" style="justify-content:flex-end;margin-top:10px">' +
-            '<label>查看：</label>' +
-            '<select id="selRecord"></select>' +
-          '</div>'
-        ) : '') +
-        renderPoemCard(active,
-          '<button class="btn small good" id="btnMainKnow">已会</button>' +
-          '<button class="btn small warn" id="btnMainAgain">再来</button>' +
-          '<button class="btn small ghost" id="btnMainEdit">编辑</button>'
-        )
-      ));
-
-    right.innerHTML =
-      '<div class="titleLine">' +
-        '<h2>随机复习</h2>' +
-        '<div class="sub2">每次只显示 1 首</div>' +
-      '</div>' +
-      '<div class="hr"></div>' +
-      '<div class="row" style="justify-content:flex-end">' +
-        '<button class="btn small primary" id="btnReroll">随机换一首</button>' +
-      '</div>' +
-      (!reviewRec ? (
-        '<div class="meta" style="margin-top:10px">还没有可复习的诗。先新增几条记录。</div>'
-      ) : (
-        renderPoemCard(reviewRec,
-          '<button class="btn small good" data-ract="know" data-id="' + reviewRec.id + '">已会</button>' +
-          '<button class="btn small warn" data-ract="again" data-id="' + reviewRec.id + '">再来</button>' +
-          '<button class="btn small ghost" data-ract="edit" data-id="' + reviewRec.id + '">编辑</button>'
-        )
-      )) +
-      '<div class="hr"></div>' +
-      '<div class="pill">保存位置</div>' +
-      '<div class="meta">内容保存于 <b>当前设备 + 当前浏览器</b>。换设备/换浏览器不会自动同步。建议定期去“备份”导出 JSON。</div>';
-
-    document.getElementById("mainDate").onchange = function(e){
-      db.ui.selectedDate = e.target.value || db.ui.selectedDate;
-      saveDB(db);
-      render();
-    };
-
-    if(active && options.length > 1){
-      var sel = document.getElementById("selRecord");
-      db.ui.mainByDate = ensurePlainObject(db.ui.mainByDate);
-      var mainId = db.ui.mainByDate[selectedDate] || null;
-
-      sel.innerHTML = options.map(function(r, i){
-        var tag = (mainId && r.id === mainId) ? "（主诗）" : (r.createdDate === selectedDate ? "（当天）" : "（历史）");
-        var selected = (r.id === active.id) ? "selected" : "";
-        return '<option value="' + r.id + '" ' + selected + '>' + (i+1) + ". " + escapeHtml(recTitle(r)) + " " + tag + '</option>';
-      }).join("");
-
-      sel.onchange = function(){
-        db.ui.selectedRecordByDate = ensurePlainObject(db.ui.selectedRecordByDate);
-        db.ui.selectedRecordByDate[selectedDate] = sel.value;
-        saveDB(db);
-        render();
-      };
-    }
-
-    if(active){
-      document.getElementById("btnMainKnow").onclick = function(){ markKnow(active.id); };
-      document.getElementById("btnMainAgain").onclick = function(){ markAgain(active.id); };
-      document.getElementById("btnMainEdit").onclick = function(){ openEditModal(active.id); };
-    }
-
-    document.getElementById("btnReroll").onclick = function(){
-      var now = nowTs();
-      var duePool2 = db.records.filter(function(r){ return isDue(r, now); });
-      var pool2 = duePool2.length ? duePool2 : db.records.slice();
-      var next = chooseRandom(pool2, db.ui.reviewRandomId);
-      db.ui.reviewRandomId = next ? next.id : null;
-      saveDB(db);
-      render();
-    };
-
-    Array.from(right.querySelectorAll("button[data-ract]")).forEach(function(btn){
-      btn.onclick = function(){
-        var act = btn.getAttribute("data-ract");
-        var id = btn.getAttribute("data-id");
-        if(act==="know") return markKnow(id);
-        if(act==="again") return markAgain(id);
-        if(act==="edit") return openEditModal(id);
-      };
-    });
-  }
-
-  /** =========================
-   *  History view
-   * ========================= */
-  var historyQuery = db.ui.historyQuery || "";
-
-  function renderMiniRow(rec){
-    var reviewed = rec.lastReviewedAt ? daysAgo(rec.lastReviewedAt) : "未复习过";
-    return '' +
-      '<div class="miniRow">' +
-        '<div class="left">' +
-          '<div style="font-weight:750">' + escapeHtml(recTitle(rec)) + '</div>' +
-          '<div class="meta">记录日期：' + escapeHtml(rec.createdDate || "") + '</div>' +
-          '<div class="meta">上次复习：' + escapeHtml(reviewed) + ' · 复习次数：' + (rec.reviewCount||0) + '</div>' +
-          '<div id="full_' + rec.id + '" style="display:none;margin-top:8px">' +
-            renderPoemCard(rec,
-              '<button class="btn small good" data-hact="know" data-id="' + rec.id + '">已会</button>' +
-              '<button class="btn small warn" data-hact="again" data-id="' + rec.id + '">再来</button>' +
-              '<button class="btn small ghost" data-hact="edit" data-id="' + rec.id + '">编辑</button>' +
-              '<button class="btn small danger" data-hact="del" data-id="' + rec.id + '">删除</button>'
-            ) +
-          '</div>' +
-        '</div>' +
-        '<div class="right">' +
-          '<button class="btn small ghost" data-hact="toggle" data-id="' + rec.id + '">展开/收起</button>' +
-        '</div>' +
-      '</div>';
-  }
-
-  function renderDateGroup(dateStr, recs){
-    var today = dateKey();
-    var d = new Date(dateStr + "T00:00:00");
-    var t = new Date(today + "T00:00:00");
-    var diffDays = Math.round((t.getTime() - d.getTime())/(24*60*60*1000));
-    var open = (diffDays >= 0 && diffDays <= 2);
-    return '' +
-      '<details ' + (open ? "open" : "") + '>' +
-        '<summary>' +
-          '<div class="row">' +
-            '<div class="pill">' + escapeHtml(dateStr) + '</div>' +
-            '<div class="meta">共 ' + recs.length + ' 条</div>' +
-          '</div>' +
-          '<div class="meta">点击展开/折叠</div>' +
-        '</summary>' +
-        '<div class="groupBody">' +
-          recs.map(renderMiniRow).join("") +
-        '</div>' +
-      '</details>';
-  }
-
-  function renderHistory(){
-    var total = db.records.length;
-    var q = String(historyQuery || "").trim();
-
-    var filtered = q ? db.records.filter(function(r){
-      var hay = [
-        r.createdDate,
-        r.title, r.author, r.dynasty
-      ].concat(safeLines(r.poemLines || [])).concat([r.note])
-      .filter(Boolean).join("\n");
-      return hay.toLowerCase().indexOf(q.toLowerCase()) >= 0;
-    }) : db.records.slice();
-
-    var grouped = groupByDate(filtered);
-
-    left.innerHTML =
-      '<div class="titleLine">' +
-        '<h2>历史记录</h2>' +
-        '<div class="sub2">共 ' + total + ' 条' + (q ? (' · 匹配 ' + filtered.length + ' 条') : '') + '</div>' +
-      '</div>' +
-      '<div class="hr"></div>' +
-      '<div class="row">' +
-        '<input type="text" id="historySearch" placeholder="搜索：题目 / 作者 / 正文关键词 / 备注" value="' + escapeHtml(q) + '" style="flex:1;min-width:260px" />' +
-        '<button class="btn ghost" id="btnClearSearch">清空</button>' +
-      '</div>' +
-      '<div class="hr"></div>' +
-      (grouped.keys.length===0
-        ? '<div class="meta">没有记录。点击右上角 <span class="kbd">+ 记录诗词</span> 添加第一条。</div>'
-        : '<div class="col" style="gap:10px">' +
-            grouped.keys.map(function(k){ return renderDateGroup(k, grouped.map.get(k)); }).join("") +
-          '</div>'
-      );
-
-    right.innerHTML =
-      '<div class="titleLine"><h2>说明</h2><div class="sub2">全库去重与主诗</div></div>' +
-      '<div class="hr"></div>' +
-      '<div class="meta">' +
-        '- 新增时按“题目”全库去重：历史里已有同题目就不再新增。<br/>' +
-        '- 遇到重复可选择：编辑旧记录，或把旧记录设为选定日期主诗。<br/>' +
-        '- 主诗可指向历史记录（不必是当天新增）。<br/>' +
-      '</div>';
-
-    document.getElementById("historySearch").oninput = function(e){
-      historyQuery = e.target.value;
-      db.ui.historyQuery = historyQuery;
-      saveDB(db);
-      renderHistory();
-    };
-    document.getElementById("btnClearSearch").onclick = function(){
-      historyQuery = "";
-      db.ui.historyQuery = "";
-      saveDB(db);
-      render();
-    };
-
-    Array.from(left.querySelectorAll("button[data-hact]")).forEach(function(btn){
-      btn.onclick = function(){
-        var act = btn.getAttribute("data-hact");
-        var id = btn.getAttribute("data-id");
-
-        if(act==="toggle"){
-          var el = document.getElementById("full_" + id);
-          var show = el.style.display !== "none";
-          el.style.display = show ? "none" : "block";
-          return;
-        }
-        if(act==="edit") return openEditModal(id);
-        if(act==="know") return markKnow(id);
-        if(act==="again") return markAgain(id);
-
-        if(act==="del"){
-          var ok = confirm("确定删除这条记录？删除后无法恢复（除非你有备份）。");
-          if(!ok) return;
-
-          db.ui.mainByDate = ensurePlainObject(db.ui.mainByDate);
-          Object.keys(db.ui.mainByDate).forEach(function(k){
-            if(db.ui.mainByDate[k] === id) delete db.ui.mainByDate[k];
-          });
-          if(db.ui.reviewRandomId === id) db.ui.reviewRandomId = null;
-
-          db.records = db.records.filter(function(r){ return r.id !== id; });
-          saveDB(db);
-          render();
-        }
-      };
-    });
-  }
-
-  /** =========================
-   *  Backup view
-   * ========================= */
-  function downloadText(filename, text, mime){
-    mime = mime || "application/json;charset=utf-8";
-    var blob = new Blob([text], {type:mime});
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-  function exportJSON(){
-    var payload = { exportedAt: nowTs(), version: db.version || 3, records: db.records, ui: db.ui };
-    downloadText("poem-journal-backup_" + dateKey() + ".json", JSON.stringify(payload, null, 2));
-  }
-  function renderBackup(){
-    var total = db.records.length;
-    var lastUpdated = total ? new Date(Math.max.apply(null, db.records.map(function(r){ return r.updatedAt||0; }))).toLocaleString() : "无";
-
-    left.innerHTML =
-      '<div class="titleLine"><h2>备份与迁移</h2><div class="sub2">强烈建议定期导出</div></div>' +
-      '<div class="hr"></div>' +
-      '<div class="meta">当前共有 <b>' + total + '</b> 条记录。最近更新：<b>' + escapeHtml(lastUpdated) + '</b>。</div>' +
-      '<div class="hr"></div>' +
-      '<div class="row">' +
-        '<button class="btn primary" id="btnExport">导出 JSON 备份</button>' +
-      '</div>' +
-      '<div class="notice" style="margin-top:10px">' +
-        '注意：GitHub Pages 只是托管网页文件；你的记录仍保存在浏览器本地。换设备/换浏览器后需要导入备份才能恢复。' +
-      '</div>';
-
-    right.innerHTML =
-      '<div class="titleLine"><h2>部署要点</h2><div class="sub2">静态站点</div></div>' +
-      '<div class="hr"></div>' +
-      '<div class="meta">' +
-        '1) 仓库根目录放 <span class="kbd">index.html</span>。<br/>' +
-        '2) Settings → Pages：Deploy from a branch → main / root。<br/>' +
-        '3) 修改后 commit，Pages 自动更新。<br/>' +
-      '</div>';
-
-    document.getElementById("btnExport").onclick = function(){ exportJSON(); };
-  }
-
-  /** =========================
-   *  Main render
-   * ========================= */
-  function render(){
-    setActiveTab();
-    if(activeTab==="today") return renderToday();
-    if(activeTab==="history") return renderHistory();
-    if(activeTab==="backup") return renderBackup();
-    return renderToday();
-  }
-
-  try{
-    render();
-  }catch(e){
-    showFatal(e);
-  }
-})();
-</script>
-</body>
-</html>
+  modalMask.addEventListener("cl
